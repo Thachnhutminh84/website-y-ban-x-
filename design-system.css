@@ -1,0 +1,245 @@
+/* ============================================
+   UBND XÃ LONG HIỆP - DESIGN SYSTEM
+   Màu sắc thống nhất cho trang web Chính phủ
+   ============================================ */
+
+:root {
+    /* === MÀU CHÍNH === */
+    --primary: #b91c1c;           /* Đỏ chính - national red */
+    --primary-dark: #991b1b;      /* Đỏ đậm */
+    --primary-light: #dc2626;     /* Đỏ sáng */
+    --primary-bg: #fef2f2;        /* Nền đỏ nhạt */
+    
+    /* === MÀU PHỤ === */
+    --gold: #d4a843;              /* Vàng - national gold */
+    --gold-light: #f0d78c;        /* Vàng nhạt */
+    --gold-dark: #b8922e;         /* Vàng đậm */
+    
+    /* === MÀU TRUNG TÍNH === */
+    --navy: #1e3a5f;              /* Xanh navy */
+    --navy-light: #2563eb;        /* Xanh navy sáng */
+    --dark: #1f2937;              /* Màu tối */
+    --text: #374151;              /* Màu chữ chính */
+    --text-light: #6b7280;        /* Màu chữ phụ */
+    --text-muted: #9ca3af;        /* Màu chữ mờ */
+    
+    /* === MÀU NỀN === */
+    --bg-white: #ffffff;
+    --bg-light: #f9fafb;
+    --bg-gray: #f3f4f6;
+    --bg-dark: #111827;
+    
+    /* === MÀU VIỀN === */
+    --border: #e5e7eb;
+    --border-light: #f3f4f6;
+    
+    /* === MÀU TRẠNG THÁI === */
+    --success: #059669;
+    --warning: #d97706;
+    --error: #dc2626;
+    --info: #2563eb;
+    
+    /* === GRADIENT === */
+    --gradient-primary: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+    --gradient-gold: linear-gradient(135deg, #d4a843 0%, #b8922e 100%);
+    --gradient-dark: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    --gradient-header: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%);
+    
+    /* === BORDER RADIUS === */
+    --radius-sm: 6px;
+    --radius: 10px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --radius-full: 9999px;
+    
+    /* === SHADOW === */
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.1), 0 4px 6px rgba(0,0,0,0.05);
+    --shadow-xl: 0 20px 25px rgba(0,0,0,0.1), 0 10px 10px rgba(0,0,0,0.04);
+    
+    /* === TRANSITION === */
+    --transition: all 0.2s ease;
+    --transition-slow: all 0.3s ease;
+    
+    /* === FONT === */
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --font-heading: 'Arial', Helvetica, sans-serif;
+}
+
+/* ============================================
+   RESET & BASE
+   ============================================ */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-family);
+    line-height: 1.6;
+    color: var(--text);
+    background: var(--bg-light);
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+a:hover {
+    color: var(--primary-dark);
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    width: 100%;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.section-title h2 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 8px;
+    font-family: var(--font-heading);
+}
+
+.section-title p {
+    color: var(--text-light);
+    font-size: 16px;
+}
+
+.section-title .title-line {
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: var(--gradient-primary);
+    margin: 12px auto 0;
+    border-radius: var(--radius-full);
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+    line-height: 1.4;
+}
+
+.btn-primary {
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: 0 2px 8px rgba(185, 28, 28, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(185, 28, 28, 0.4);
+    color: white;
+}
+
+.btn-secondary {
+    background: white;
+    color: var(--text);
+    border: 2px solid var(--border);
+}
+
+.btn-secondary:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.btn-gold {
+    background: var(--gradient-gold);
+    color: white;
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+}
+
+.btn-outline:hover {
+    background: var(--primary);
+    color: white;
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+.card {
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: var(--transition-slow);
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* ============================================
+   BADGES
+   ============================================ */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: var(--radius-full);
+    line-height: 1.4;
+}
+
+.badge-primary {
+    background: var(--primary-bg);
+    color: var(--primary);
+}
+
+.badge-gold {
+    background: #fef3c7;
+    color: var(--gold-dark);
+}
+
+.badge-success {
+    background: #d1fae5;
+    color: var(--success);
+}

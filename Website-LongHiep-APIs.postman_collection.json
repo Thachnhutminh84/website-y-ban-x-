@@ -1,0 +1,909 @@
+{
+	"info": {
+		"_postman_id": "website-longhiep-apis",
+		"name": "Website Long Hiep APIs",
+		"description": "Collection các API của website UBND Xã Long Hiệp",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "File Management",
+			"item": [
+				{
+					"name": "Save File",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Cookie",
+								"value": "PHPSESSID={{session_id}}",
+								"type": "text",
+								"description": "Thay {{session_id}} bằng PHPSESSID thực tế"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"action\": \"save\",\n    \"file_path\": \"videos/test-video.mp4\",\n    \"file_name\": \"Video Test\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api-save-file.php",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api-save-file.php"
+							]
+						},
+						"description": "API để lưu file vào danh sách yêu thích của user"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete File",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Cookie",
+								"value": "PHPSESSID={{session_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"action\": \"delete\",\n    \"file_path\": \"videos/test-video.mp4\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api-delete-file.php",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api-delete-file.php"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Video Management",
+			"item": [
+				{
+					"name": "Get Video Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api-get-video-info.php?id=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api-get-video-info.php"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID của video"
+								}
+							]
+						},
+						"description": "Lấy thông tin chi tiết của một video"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Video Views",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"video_id\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api-update-video-views.php",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api-update-video-views.php"
+							]
+						},
+						"description": "Tăng số lượt xem của video"
+					},
+					"response": []
+				},
+				{
+					"name": "Save Video",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Cookie",
+								"value": "PHPSESSID={{session_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"video_id\": 1,\n    \"action\": \"save\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api-save-video.php",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api-save-video.php"
+							]
+						},
+						"description": "Lưu video vào danh sách yêu thích"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Video",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Cookie",
+								"value": "PHPSESSID={{session_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"video_id\": 1,\n    \"action\": \"delete\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api-delete-video.php",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api-delete-video.php"
+							]
+						},
+						"description": "Xóa video (set is_active = 0)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Search & Contact",
+			"item": [
+				{
+					"name": "Search",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api-search.php?q=long hiep",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api-search.php"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "long hiep",
+									"description": "Từ khóa tìm kiếm"
+								}
+							]
+						},
+						"description": "Tìm kiếm tin tức, lãnh đạo, phòng ban"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Contact Detail",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "PHPSESSID={{session_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api-contact-detail.php?id=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api-contact-detail.php"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID tin nhắn liên hệ"
+								}
+							]
+						},
+						"description": "Lấy chi tiết tin nhắn liên hệ (cần đăng nhập admin)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Contact Status",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Cookie",
+								"value": "PHPSESSID={{session_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"status\": \"read\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api-update-contact.php",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api-update-contact.php"
+							]
+						},
+						"description": "Cập nhật trạng thái tin nhắn (read/unread/resolved)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Department Staff",
+			"item": [
+				{
+					"name": "Get Department Staff",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api-department-staff.php?department=ubnd",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api-department-staff.php"
+							],
+							"query": [
+								{
+									"key": "department",
+									"value": "ubnd",
+									"description": "Slug phòng ban (ubnd, hanh-chinh-cong, kinh-te, y-te...)"
+								}
+							]
+						},
+						"description": "Lấy danh sách cán bộ theo phòng ban"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Department Staff",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api-department-staff.php",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api-department-staff.php"
+							]
+						},
+						"description": "Lấy tất cả cán bộ (không lọc phòng ban)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Department Staff (DB Version)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api-department-staff-db.php?department_id=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api-department-staff-db.php"
+							],
+							"query": [
+								{
+									"key": "department_id",
+									"value": "1",
+									"description": "ID phòng ban trong database"
+								}
+							]
+						},
+						"description": "Lấy cán bộ từ database (phiên bản mới)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "admin123",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/dang-nhap.php",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"dang-nhap.php"
+							]
+						},
+						"description": "Đăng nhập vào hệ thống. Sau khi đăng nhập thành công, copy PHPSESSID từ cookie và cập nhật vào biến {{session_id}}"
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "testuser",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "password123",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "test@example.com",
+									"type": "text"
+								},
+								{
+									"key": "full_name",
+									"value": "Nguyen Van Test",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/process-register.php",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"process-register.php"
+							]
+						},
+						"description": "Đăng ký tài khoản mới"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "News Management",
+			"item": [
+				{
+					"name": "Get News List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/tin-tuc.php?category=cong-tac-xay-dung-dang",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tin-tuc.php"
+							],
+							"query": [
+								{
+									"key": "category",
+									"value": "cong-tac-xay-dung-dang",
+									"description": "Slug danh mục (cong-tac-xay-dung-dang, mat-tran-doan-the, an-ninh-trat-tu...)"
+								}
+							]
+						},
+						"description": "Lấy danh sách tin tức theo danh mục"
+					},
+					"response": []
+				},
+				{
+					"name": "Get News Detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/chi-tiet-tin.php?id=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chi-tiet-tin.php"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID tin tức"
+								}
+							]
+						},
+						"description": "Xem chi tiết một tin tức"
+					},
+					"response": []
+				},
+				{
+					"name": "Add News (Form)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "PHPSESSID={{session_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "Tiêu đề tin tức",
+									"type": "text"
+								},
+								{
+									"key": "content",
+									"value": "<p>Nội dung tin tức</p>",
+									"type": "text"
+								},
+								{
+									"key": "category",
+									"value": "cong-tac-xay-dung-dang",
+									"type": "text"
+								},
+								{
+									"key": "featured_image",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/xu-ly-them-tin.php",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"xu-ly-them-tin.php"
+							]
+						},
+						"description": "Thêm tin tức mới (cần đăng nhập admin)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update News (Form)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "PHPSESSID={{session_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "id",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "Tiêu đề đã cập nhật",
+									"type": "text"
+								},
+								{
+									"key": "content",
+									"value": "<p>Nội dung đã cập nhật</p>",
+									"type": "text"
+								},
+								{
+									"key": "category",
+									"value": "cong-tac-xay-dung-dang",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/xu-ly-sua-tin.php",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"xu-ly-sua-tin.php"
+							]
+						},
+						"description": "Cập nhật tin tức (cần đăng nhập admin)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Leaders",
+			"item": [
+				{
+					"name": "Get Leaders List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/lanh-dao.php",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"lanh-dao.php"
+							]
+						},
+						"description": "Lấy danh sách lãnh đạo xã"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Leader Detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/chi-tiet-lanh-dao.php?id=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chi-tiet-lanh-dao.php"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID lãnh đạo"
+								}
+							]
+						},
+						"description": "Xem chi tiết thông tin lãnh đạo"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Departments",
+			"item": [
+				{
+					"name": "Get Departments List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/phong-ban.php",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"phong-ban.php"
+							]
+						},
+						"description": "Lấy danh sách các phòng ban"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Department Detail - UBND",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/phong-ubnd.php",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"phong-ubnd.php"
+							]
+						},
+						"description": "Chi tiết phòng UBND"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Department Detail - Hành chính công",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/phong-hanh-chinh-cong.php",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"phong-hanh-chinh-cong.php"
+							]
+						},
+						"description": "Chi tiết phòng Hành chính công"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Department Detail - Kinh tế",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/phong-kinh-te.php",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"phong-kinh-te.php"
+							]
+						},
+						"description": "Chi tiết phòng Kinh tế"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Department Detail - Y tế",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/phong-y-te.php",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"phong-y-te.php"
+							]
+						},
+						"description": "Chi tiết trạm Y tế"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Phone Directory",
+			"item": [
+				{
+					"name": "Get Phone Directory",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/danh-ba-dien-thoai.php",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"danh-ba-dien-thoai.php"
+							]
+						},
+						"description": "Lấy danh bạ điện thoại toàn xã"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Contact",
+			"item": [
+				{
+					"name": "Submit Contact Form",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Nguyen Van A",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "nguyenvana@example.com",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "0123456789",
+									"type": "text"
+								},
+								{
+									"key": "subject",
+									"value": "Góp ý về website",
+									"type": "text"
+								},
+								{
+									"key": "message",
+									"value": "Nội dung góp ý của tôi...",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/lien-he.php",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"lien-he.php"
+							]
+						},
+						"description": "Gửi form liên hệ"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Contact Messages (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "PHPSESSID={{session_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tin-nhan-lien-he.php",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tin-nhan-lien-he.php"
+							]
+						},
+						"description": "Xem danh sách tin nhắn liên hệ (cần đăng nhập admin)"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost/website-thuctap",
+			"type": "string"
+		},
+		{
+			"key": "session_id",
+			"value": "THAY_BANG_PHPSESSID_CUA_BAN",
+			"type": "string"
+		}
+	]
+}

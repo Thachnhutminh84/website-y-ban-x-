@@ -1,0 +1,8 @@
+Cần thay đổi trong lanh-dao.php:
+
+TỪ:
+    <?php include 'menu-don-gian.php'; ?>
+
+THÀNH:
+    <?php include 'header-thong-nhat.php'; ?>
+    <?php include 'menu-thong-nhat.php'; ?>

@@ -1,0 +1,44 @@
+# IDE
+.vscode/
+.idea/
+.kiro/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Sensitive files
+.env
+config.php
+
+# Backups
+*-backup-*.php
+*-old-backup.php
+
+# Large files
+images/ChatGPT*
+images/Gemini*
+images/*.exe
+images/Git*
+*.exe
+*.wav
+*.mp4
+*.avi
+*.mov
+
+# Logs
+logs/
+
+# Frontend build
+frontend/dist/
+frontend/node_modules/
+node_modules/
+
+# Uploads (user content)
+uploads/
+
+# SQL dumps
+*.sql
+
+# Videos
+videos/

@@ -1,0 +1,197 @@
+/* ============================================
+   WORD DOCUMENT STYLES
+   Hiển thị nội dung từ Word đúng format
+   ============================================ */
+
+/* Container standalone */
+.word-document-content {
+    max-width: 21cm;
+    margin: 0 auto;
+    padding: 2.5cm 2cm 2.5cm 3cm;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 14pt;
+    line-height: 1.5;
+    color: #000;
+    min-height: 29.7cm;
+}
+
+/* Container inside detail page */
+.detail-content--word .detail-body--large .word-document-content {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    min-height: auto;
+}
+
+/* ===== BẢNG WORD ===== */
+
+/* Bảng word-data-table - có border từ Word, giữ inline style */
+.word-data-table,
+.word-document-content table.word-data-table {
+    border-collapse: collapse;
+    margin: 10px 0;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.word-data-table td,
+.word-data-table th,
+.word-document-content table.word-data-table td,
+.word-document-content table.word-data-table th {
+    padding: 4px 12px;
+    vertical-align: top;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Bảng word-layout-table - không border (bố cục) */
+.word-layout-table,
+.word-document-content table.word-layout-table {
+    border-collapse: collapse;
+    margin: 10px 0;
+    width: 100%;
+}
+
+.word-layout-table td,
+.word-layout-table th,
+.word-document-content table.word-layout-table td,
+.word-document-content table.word-layout-table th {
+    border: none;
+    padding: 4px 12px;
+    vertical-align: top;
+}
+
+/* Bảng có inline border từ editor - hiển thị border */
+.detail-body--large .word-document-content table[style*="border"],
+.detail-body--large .word-document-content table[style*="border"] td,
+.detail-body--large .word-document-content table[style*="border"] th {
+    border: 1px solid #000;
+}
+
+/* Bảng không có inline border - giữ nguyên CSS */
+.detail-body--large .word-document-content table:not([style*="border"]),
+.detail-body--large .word-document-content table:not([style*="border"]) td,
+.detail-body--large .word-document-content table:not([style*="border"]) th {
+    border: 1px solid #000;
+}
+
+/* Hàng trống cuối ẩn */
+.word-data-table tr:last-child td:empty,
+.word-document-content table.word-data-table tr:last-child td:empty {
+    display: none;
+}
+
+/* Bảng header UBND/CỘNG HÒA - chỉ ẩn khung table, giữ text */
+.word-document-content table.word-header-table,
+.detail-content--word .word-document-content table.word-header-table {
+    border: none !important;
+    border-collapse: separate;
+    margin: 0;
+    width: 100%;
+    table-layout: auto;
+}
+.word-document-content table.word-header-table td,
+.word-document-content table.word-header-table th,
+.detail-content--word .word-document-content table.word-header-table td,
+.detail-content--word .word-document-content table.word-header-table th {
+    border: none !important;
+    padding: 2px 0;
+    text-align: center;
+    font-weight: normal;
+    background: transparent;
+}
+.word-document-content table.word-header-table td:empty,
+.word-document-content table.word-header-table th:empty {
+    display: none;
+}
+
+/* ===== ĐOẠN VĂN ===== */
+.word-document-content p {
+    margin: 6px 0;
+    line-height: 1.5;
+    font-size: 14pt;
+    font-family: 'Times New Roman', Times, serif;
+    color: #000;
+}
+
+/* ===== HEADING ===== */
+.word-document-content h1,
+.word-document-content h2,
+.word-document-content h3,
+.word-document-content h4 {
+    font-family: 'Times New Roman', Times, serif;
+    color: #000;
+    margin: 12px 0 8px;
+    line-height: 1.5;
+    font-size: 14pt;
+}
+
+/* ===== TEXT FORMATTING ===== */
+.word-document-content strong,
+.word-document-content b {
+    font-weight: bold;
+}
+
+.word-document-content em,
+.word-document-content i {
+    font-style: italic;
+}
+
+.word-document-content u {
+    text-decoration: underline;
+}
+
+/* ===== DANH SÁCH ===== */
+.word-document-content ul,
+.word-document-content ol {
+    margin: 8px 0;
+    padding-left: 30px;
+}
+
+.word-document-content li {
+    margin: 4px 0;
+    line-height: 1.5;
+}
+
+/* ===== ẢNH ===== */
+.word-document-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 10px auto;
+}
+
+/* ===== ĐƯỜNG KẺ ===== */
+.word-document-content hr {
+    border: none;
+    border-top: 1px solid #000;
+    margin: 15px 0;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .word-document-content {
+        max-width: 100%;
+        padding: 15px;
+        font-size: 12pt;
+        min-height: auto;
+    }
+
+    .detail-body--large .word-document-content {
+        max-width: 100%;
+        font-size: 12pt;
+    }
+
+    .word-data-table td,
+    .word-data-table th {
+        font-size: 11pt;
+        padding: 3px 8px;
+    }
+}

@@ -1,0 +1,42 @@
+# Tăng giới hạn upload file cho video
+php_value upload_max_filesize 500M
+php_value post_max_size 500M
+php_value max_execution_time 600
+php_value max_input_time 600
+php_value memory_limit 512M
+
+# Tắt directory listing
+Options -Indexes
+
+# Chặn file .env
+<Files .env>
+    Require all denied
+</Files>
+
+# Chặn file phpinfo.php
+<Files phpinfo.php>
+    Require all denied
+</Files>
+
+# Chặn file config.php
+<Files config.php>
+    Require all denied
+</Files>
+
+# Chặn file create-admin.php
+<Files create-admin.php>
+    Require all denied
+</Files>
+
+# Chặn debug/test files
+<FilesMatch "^(debug-|test-)">
+    Require all denied
+</FilesMatch>
+
+# Security headers
+<IfModule mod_headers.c>
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

@@ -1,0 +1,28 @@
+{
+  "name": "longhiep-websocket-server",
+  "version": "1.0.0",
+  "description": "WebSocket server cho hệ thống chat real-time",
+  "main": "websocket-chat-server.js",
+  "scripts": {
+    "start": "node websocket-chat-server.js",
+    "dev": "nodemon websocket-chat-server.js",
+    "pm2:start": "pm2 start websocket-chat-server.js --name longhiep-chat",
+    "pm2:stop": "pm2 stop longhiep-chat",
+    "pm2:restart": "pm2 restart longhiep-chat",
+    "pm2:logs": "pm2 logs longhiep-chat"
+  },
+  "keywords": [
+    "websocket",
+    "chat",
+    "realtime"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^8.14.2",
+    "mysql2": "^3.6.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

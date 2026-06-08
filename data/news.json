@@ -1,0 +1,24 @@
+[
+    {
+        "id": "xay-dung-dang1772612257",
+        "category": "xay-dung-dang",
+        "title": "Ban Chấp Hành Quy Chế",
+        "date": "2026-03-04",
+        "image": "images\/news-1772612257.jpg",
+        "summary": "hình ảnh",
+        "content": "hình ảnh được nén",
+        "author": "admin",
+        "created_at": "2026-03-04 09:17:37"
+    },
+    {
+        "id": "xay-dung-dang1772612997",
+        "category": "xay-dung-dang",
+        "title": "Tờ Trình",
+        "date": "2026-03-04",
+        "image": "images\/news-default.jpg",
+        "summary": "Trình Bày về hội thi",
+        "content": "Hội thi hùng biện tiếng anh giành choh các tiểu học năm học 2026",
+        "author": "admin",
+        "created_at": "2026-03-04 09:29:57"
+    }
+]
