@@ -1412,7 +1412,7 @@ require_once 'auth.php';
                         </div>
                         <h4>Địa chỉ tiếp dân</h4>
                         <p>Bộ phận Tiếp nhận và Trả kết quả - Tầng 1, trụ sở UBND xã</p>
-                        <div class="contact-highlight">Xã Long Hiệp, Huyện Long Hồ, Vĩnh Long</div>
+                        <div class="contact-highlight">Xã Long Hiệp, Vĩnh Long</div>
                     </div>
                 </div>
 

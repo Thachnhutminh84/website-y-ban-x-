@@ -9,9 +9,6 @@ require_once 'auth.php';
 // Kiểm tra đăng nhập và quyền
 authRequireCanBo();
 
-// Kiểm tra xem user có phải người dân (chỉ xem) hay cán bộ (full quyền)
-$isViewOnly = authIsNguoiDan();
-
 $page_title = "Quản lý đánh giá hiệu suất";
 include 'header-menu.php';
 
@@ -20,91 +17,24 @@ $success_message = $_SESSION['success_message'] ?? '';
 $error_message = $_SESSION['error_message'] ?? '';
 unset($_SESSION['success_message'], $_SESSION['error_message']);
 
-// Danh sách cán bộ đầy đủ từ danh bạ điện thoại (68 người)
-$employees_data = [
-    // ỦY BAN NHÂN DÂN XÃ LONG HIỆP
-    ['id' => 1, 'full_name' => 'Nguyễn Khánh Hòa', 'employee_code' => 'NV001', 'position' => 'Chủ tịch Ủy ban Nhân dân xã', 'department_name' => 'Ủy ban Nhân dân Xã Long Hiệp'],
-    ['id' => 2, 'full_name' => 'Kiên Thanh Huy Sale', 'employee_code' => 'NV002', 'position' => 'Phó Chủ tịch Ủy ban Nhân dân xã', 'department_name' => 'Ủy ban Nhân dân Xã Long Hiệp'],
-    ['id' => 3, 'full_name' => 'Trần Thanh Tùng', 'employee_code' => 'NV003', 'position' => 'Phó Chủ tịch Ủy ban Nhân dân xã', 'department_name' => 'Ủy ban Nhân dân Xã Long Hiệp'],
-    ['id' => 4, 'full_name' => 'Lê Văn Dũng', 'employee_code' => 'NV004', 'position' => 'Chuyên viên Văn phòng UBMTTQVN xã', 'department_name' => 'Ủy ban Nhân dân Xã Long Hiệp'],
-    ['id' => 5, 'full_name' => 'Lê Thị Hồng Cẩm', 'employee_code' => 'NV005', 'position' => 'Chuyên viên Văn phòng UBMTTQVN xã', 'department_name' => 'Ủy ban Nhân dân Xã Long Hiệp'],
-    ['id' => 6, 'full_name' => 'Thạch Ra', 'employee_code' => 'NV006', 'position' => 'Chuyên viên Văn phòng UBMTTQVN xã', 'department_name' => 'Ủy ban Nhân dân Xã Long Hiệp'],
-    ['id' => 7, 'full_name' => 'Kim Ngọc Huỳnh', 'employee_code' => 'NV007', 'position' => 'Chuyên viên Văn phòng UBMTTQVN xã', 'department_name' => 'Ủy ban Nhân dân Xã Long Hiệp'],
-    ['id' => 8, 'full_name' => 'Kiên Thắng', 'employee_code' => 'NV008', 'position' => 'Chuyên viên Văn phòng UBMTTQVN xã', 'department_name' => 'Ủy ban Nhân dân Xã Long Hiệp'],
-    ['id' => 9, 'full_name' => 'Kim Ngọc Khang', 'employee_code' => 'NV009', 'position' => 'Chuyên viên Văn phòng UBMTTQVN xã', 'department_name' => 'Ủy ban Nhân dân Xã Long Hiệp'],
-    ['id' => 10, 'full_name' => 'Kim Thị Di Na', 'employee_code' => 'NV010', 'position' => 'Chuyên viên Văn phòng UBMTTQVN xã', 'department_name' => 'Ủy ban Nhân dân Xã Long Hiệp'],
-    ['id' => 11, 'full_name' => 'Nguyễn Văn Hùng', 'employee_code' => 'NV011', 'position' => 'Chuyên viên Văn phòng UBMTTQVN xã', 'department_name' => 'Ủy ban Nhân dân Xã Long Hiệp'],
-    
-    // BAN LÃNH ĐẠO ĐẢNG ỦY
-    ['id' => 12, 'full_name' => 'Trần Văn Mười', 'employee_code' => 'NV012', 'position' => 'Bí thư Đảng ủy xã', 'department_name' => 'Ban Lãnh đạo Đảng ủy'],
-    ['id' => 13, 'full_name' => 'Lâm Thái Hòa', 'employee_code' => 'NV013', 'position' => 'Phó Bí thư Thường trực Đảng ủy', 'department_name' => 'Ban Lãnh đạo Đảng ủy'],
-    ['id' => 14, 'full_name' => 'Nguyễn Khánh Hòa', 'employee_code' => 'NV014', 'position' => 'Phó Bí thư Đảng ủy', 'department_name' => 'Ban Lãnh đạo Đảng ủy'],
-    
-    // ỦY VIÊN BAN THƯỜNG VỤ ĐẢNG ỦY
-    ['id' => 15, 'full_name' => 'Hà Minh Tân', 'employee_code' => 'NV015', 'position' => 'UVBTV, Chủ nhiệm UBKT Đảng ủy', 'department_name' => 'Ủy viên Ban Thường vụ Đảng ủy'],
-    ['id' => 16, 'full_name' => 'Dương Hoài An', 'employee_code' => 'NV016', 'position' => 'UVBTV, Trưởng ban Xây dựng Đảng', 'department_name' => 'Ủy viên Ban Thường vụ Đảng ủy'],
-    ['id' => 17, 'full_name' => 'Tư Thị Mỹ Linh', 'employee_code' => 'NV017', 'position' => 'UVBTV, Chủ tịch UBMTTQ Việt Nam', 'department_name' => 'Ủy viên Ban Thường vụ Đảng ủy'],
-    ['id' => 18, 'full_name' => 'Nguyễn Thị Thúy Trang', 'employee_code' => 'NV018', 'position' => 'UVBTV, Phó Chủ tịch HĐND', 'department_name' => 'Ủy viên Ban Thường vụ Đảng ủy'],
-    ['id' => 19, 'full_name' => 'Phan Đình Huy', 'employee_code' => 'NV019', 'position' => 'UVBTV, Trưởng Công an xã', 'department_name' => 'Ủy viên Ban Thường vụ Đảng ủy'],
-    ['id' => 20, 'full_name' => 'Nguyễn Văn Ký', 'employee_code' => 'NV020', 'position' => 'UVBTV, Chỉ huy Trưởng BCH Quân sự', 'department_name' => 'Ủy viên Ban Thường vụ Đảng ủy'],
-    ['id' => 21, 'full_name' => 'Thạch Thanh Mỹ', 'employee_code' => 'NV021', 'position' => 'UVBCH, Trưởng Phòng Văn hóa - Xã hội', 'department_name' => 'Ủy viên Ban Thường vụ Đảng ủy'],
-    ['id' => 22, 'full_name' => 'Lâm Quí', 'employee_code' => 'NV022', 'position' => 'UVBCH, Phó chủ nhiệm UBKT ĐU', 'department_name' => 'Ủy viên Ban Thường vụ Đảng ủy'],
-    ['id' => 23, 'full_name' => 'Kim Tha', 'employee_code' => 'NV023', 'position' => 'UVBCH, phó trưởng ban VH - XH HĐND', 'department_name' => 'Ủy viên Ban Thường vụ Đảng ủy'],
-    ['id' => 24, 'full_name' => 'Trầm Thị Sa Nên', 'employee_code' => 'NV024', 'position' => 'UVBCH, Phó trưởng ban XĐĐ', 'department_name' => 'Ủy viên Ban Thường vụ Đảng ủy'],
-    ['id' => 25, 'full_name' => 'Đoàn Công Uẩn', 'employee_code' => 'NV025', 'position' => 'UVBCH, Phó trưởng ban XĐĐ', 'department_name' => 'Ủy viên Ban Thường vụ Đảng ủy'],
-    ['id' => 26, 'full_name' => 'Kim Thái Bình', 'employee_code' => 'NV026', 'position' => 'UVBCH, Phó chủ tịch UBMTTQ Việt Nam', 'department_name' => 'Ủy viên Ban Thường vụ Đảng ủy'],
-    ['id' => 27, 'full_name' => 'Tăng Thị Hồng Thắm', 'employee_code' => 'NV027', 'position' => 'UVBCH, PCT.UBMTTQ-CT.HLHPN', 'department_name' => 'Ủy viên Ban Thường vụ Đảng ủy'],
-    ['id' => 28, 'full_name' => 'Trần Trung Thương', 'employee_code' => 'NV028', 'position' => 'UVBCH, PCT.UBMTTQ-BT. Đoàn TN', 'department_name' => 'Ủy viên Ban Thường vụ Đảng ủy'],
-    ['id' => 29, 'full_name' => 'Kim Ngọc Mạnh', 'employee_code' => 'NV029', 'position' => 'UVBCH, PCT.UBMTTQ-CT.HCCB', 'department_name' => 'Ủy viên Ban Thường vụ Đảng ủy'],
-    ['id' => 30, 'full_name' => 'Thạch Kim Sĩ', 'employee_code' => 'NV030', 'position' => 'UVBCH, PCT.UBMTTQ-CT.HND', 'department_name' => 'Ủy viên Ban Thường vụ Đảng ủy'],
-    ['id' => 31, 'full_name' => 'Kim Thanh Nhứt', 'employee_code' => 'NV031', 'position' => 'UVBCH, Phó chủ nhiệm UBKT Đảng', 'department_name' => 'Ủy viên Ban Thường vụ Đảng ủy'],
-    ['id' => 32, 'full_name' => 'Nguyễn Hoàng Quân', 'employee_code' => 'NV032', 'position' => 'Chuyên viên ban kiểm tra Đảng Ủy', 'department_name' => 'Ủy viên Ban Thường vụ Đảng ủy'],
-    ['id' => 33, 'full_name' => 'Thạch Ngọc Bình', 'employee_code' => 'NV033', 'position' => 'Chuyên viên ban kiểm tra Đảng Ủy', 'department_name' => 'Ủy viên Ban Thường vụ Đảng ủy'],
-    ['id' => 34, 'full_name' => 'Thạch Công Bình', 'employee_code' => 'NV034', 'position' => 'Chuyên viên ban kiểm tra Đảng Ủy', 'department_name' => 'Ủy viên Ban Thường vụ Đảng ủy'],
-    ['id' => 35, 'full_name' => 'Nguyễn Công Hường', 'employee_code' => 'NV035', 'position' => 'Chuyên viên ban kiểm tra Đảng Ủy', 'department_name' => 'Ủy viên Ban Thường vụ Đảng ủy'],
-    ['id' => 36, 'full_name' => 'Thạch Thị Kiều Oanh', 'employee_code' => 'NV036', 'position' => 'Ủy viên Ủy ban kiểm tra Đảng ủy xã', 'department_name' => 'Ủy viên Ban Thường vụ Đảng ủy'],
-    ['id' => 37, 'full_name' => 'Trần Thị Xuân Thủy', 'employee_code' => 'NV037', 'position' => 'Ủy viên Ủy ban kiểm tra Đảng ủy xã', 'department_name' => 'Ủy viên Ban Thường vụ Đảng ủy'],
-    ['id' => 38, 'full_name' => 'Thạch Rạch Ta Na', 'employee_code' => 'NV038', 'position' => 'Chuyên viên Ủy ban kiểm tra Đảng ủy xã', 'department_name' => 'Ủy viên Ban Thường vụ Đảng ủy'],
-    
-    // PHÒNG KINH TẾ
-    ['id' => 39, 'full_name' => 'Kim Bảy Ly', 'employee_code' => 'NV039', 'position' => 'Trưởng Phòng Kinh tế', 'department_name' => 'Phòng Kinh tế'],
-    ['id' => 40, 'full_name' => 'Son Ngọc Danh Thái', 'employee_code' => 'NV040', 'position' => 'Phó Trưởng phòng Kinh tế', 'department_name' => 'Phòng Kinh tế'],
-    ['id' => 41, 'full_name' => 'Kim Thanh Phong', 'employee_code' => 'NV041', 'position' => 'Chuyên viên Phòng Kinh tế', 'department_name' => 'Phòng Kinh tế'],
-    ['id' => 42, 'full_name' => 'Lê Văn Chắc', 'employee_code' => 'NV042', 'position' => 'Chuyên viên Phòng Kinh tế', 'department_name' => 'Phòng Kinh tế'],
-    ['id' => 43, 'full_name' => 'Kim Ngọc Chhộts', 'employee_code' => 'NV043', 'position' => 'Chuyên viên Phòng Kinh tế', 'department_name' => 'Phòng Kinh tế'],
-    ['id' => 44, 'full_name' => 'Kim Ngọc Cường', 'employee_code' => 'NV044', 'position' => 'Chuyên viên Phòng Kinh tế', 'department_name' => 'Phòng Kinh tế'],
-    ['id' => 45, 'full_name' => 'Lâm Phước Hoàng', 'employee_code' => 'NV045', 'position' => 'Chuyên viên Phòng Kinh tế', 'department_name' => 'Phòng Kinh tế'],
-    ['id' => 46, 'full_name' => 'Thạch Văn Thi', 'employee_code' => 'NV046', 'position' => 'Chuyên viên Phòng Kinh tế', 'department_name' => 'Phòng Kinh tế'],
-    ['id' => 47, 'full_name' => 'Lê Tấn Phương', 'employee_code' => 'NV047', 'position' => 'Chuyên viên Phòng Kinh tế', 'department_name' => 'Phòng Kinh tế'],
-    ['id' => 48, 'full_name' => 'TRần Văn Phúc', 'employee_code' => 'NV048', 'position' => 'UVBCH, Phó trưởng ban KT - NS HĐND', 'department_name' => 'Phòng Kinh tế'],
-    ['id' => 49, 'full_name' => 'Trần Hồng Thủy', 'employee_code' => 'NV049', 'position' => 'Chuyên viên phòng kinh tế xã Long Hiệp', 'department_name' => 'Phòng Kinh tế'],
-    
-    // VĂN PHÒNG HĐND VÀ UBND
-    ['id' => 50, 'full_name' => 'Nguyễn Trọng Thủy', 'employee_code' => 'NV050', 'position' => 'Chánh Văn phòng Đảng ủy', 'department_name' => 'Văn phòng HĐND và UBND'],
-    ['id' => 51, 'full_name' => 'Thạch Som Nang', 'employee_code' => 'NV051', 'position' => 'Chánh Văn phòng HĐND và UBND', 'department_name' => 'Văn phòng HĐND và UBND'],
-    ['id' => 52, 'full_name' => 'Trần Thị Hồng Thủy', 'employee_code' => 'NV052', 'position' => 'Phó Chánh Văn phòng Đảng ủy', 'department_name' => 'Văn phòng HĐND và UBND'],
-    ['id' => 53, 'full_name' => 'Thạch Huỳnh Thủy', 'employee_code' => 'NV053', 'position' => 'Phó Chánh Văn phòng Đảng ủy', 'department_name' => 'Văn phòng HĐND và UBND'],
-    ['id' => 54, 'full_name' => 'Hà Phước Hiệp', 'employee_code' => 'NV054', 'position' => 'Chuyên viên Văn phòng Đảng ủy', 'department_name' => 'Văn phòng HĐND và UBND'],
-    ['id' => 55, 'full_name' => 'Kim Ngọc Bình', 'employee_code' => 'NV055', 'position' => 'Chuyên viên Văn phòng Đảng ủy', 'department_name' => 'Văn phòng HĐND và UBND'],
-    
-    // PHÒNG VĂN HÓA - XÃ HỘI
-    ['id' => 56, 'full_name' => 'Thạch Thanh Mỹ', 'employee_code' => 'NV056', 'position' => 'Trưởng Phòng Văn hóa - Xã hội', 'department_name' => 'Phòng Văn hóa - Xã hội'],
-    ['id' => 57, 'full_name' => 'Trần Quốc Hùng', 'employee_code' => 'NV057', 'position' => 'Phó Trưởng phòng Văn hóa - Xã hội', 'department_name' => 'Phòng Văn hóa - Xã hội'],
-    ['id' => 58, 'full_name' => 'Thạch Ngọc Suyến', 'employee_code' => 'NV058', 'position' => 'Chuyên viên Phòng Văn hóa - Xã hội', 'department_name' => 'Phòng Văn hóa - Xã hội'],
-    ['id' => 59, 'full_name' => 'Đoàn Văn Để', 'employee_code' => 'NV059', 'position' => 'Chuyên viên Phòng Văn hóa - Xã hội', 'department_name' => 'Phòng Văn hóa - Xã hội'],
-    ['id' => 60, 'full_name' => 'Thạch Quanh Tha', 'employee_code' => 'NV060', 'position' => 'Chuyên viên Phòng Văn hóa - Xã hội', 'department_name' => 'Phòng Văn hóa - Xã hội'],
-    ['id' => 61, 'full_name' => 'Thạch Ri Tâm', 'employee_code' => 'NV061', 'position' => 'Chuyên viên Phòng Văn hóa - Xã hội', 'department_name' => 'Phòng Văn hóa - Xã hội'],
-    ['id' => 62, 'full_name' => 'Kim Thu Na', 'employee_code' => 'NV062', 'position' => 'Chuyên viên Phòng Văn hóa - Xã hội', 'department_name' => 'Phòng Văn hóa - Xã hội'],
-    ['id' => 63, 'full_name' => 'Nguyễn Thị Trúc Giang', 'employee_code' => 'NV063', 'position' => 'Chuyên viên Phòng Văn hóa - Xã hội', 'department_name' => 'Phòng Văn hóa - Xã hội'],
-    ['id' => 64, 'full_name' => 'Thạch Ngọc Cường', 'employee_code' => 'NV064', 'position' => 'Chuyên viên phòng Văn Hóa - Xã Hội xã', 'department_name' => 'Phòng Văn hóa - Xã hội'],
-    
-    // TRẠM Y TẾ XÃ
-    ['id' => 65, 'full_name' => 'Huỳnh Thanh Tâm', 'employee_code' => 'NV065', 'position' => 'Trạm trưởng Trạm Y tế', 'department_name' => 'Trạm Y tế xã'],
-    
-    // CÔNG AN XÃ
-    ['id' => 66, 'full_name' => 'Kim Bình Luận', 'employee_code' => 'NV066', 'position' => 'UVBCH, Phó Trưởng công an', 'department_name' => 'Công an xã'],
-    ['id' => 67, 'full_name' => 'Phan Đình Huy', 'employee_code' => 'NV067', 'position' => 'UVBTV, Trưởng công an xã', 'department_name' => 'Công an xã']
-];
+// Đọc danh sách nhân viên từ database
+$employees_data = [];
+$conn = getDBConnection();
+if ($conn) {
+    $result = $conn->query("SELECT ds.id, ds.name as full_name, 
+                                   CONCAT('NV', LPAD(ds.id, 3, '0')) as employee_code,
+                                   ds.position, 
+                                   d.name as department_name
+                            FROM department_staff ds
+                            LEFT JOIN departments d ON ds.department_id = d.id
+                            WHERE ds.status = 'active'
+                            ORDER BY d.display_order ASC, ds.position DESC, ds.name ASC");
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $employees_data[] = $row;
+        }
+    }
+}
 
 $total_employees = count($employees_data);
 
@@ -383,14 +313,12 @@ $stats = [
     <div class="evaluation-table-container">
         <div class="table-header">
             <h3>Danh sách nhân viên</h3>
-            <?php if (!$isViewOnly): ?>
             <div>
                 <a href="#" class="btn-primary" onclick="alert('Chức năng đang phát triển'); return false;">
                     <i class="fas fa-plus-circle"></i>
                     Tạo chu kỳ đánh giá mới
                 </a>
             </div>
-            <?php endif; ?>
         </div>
 
         <?php if ($total_employees > 0): ?>
@@ -439,9 +367,14 @@ $stats = [
                     <td><?php echo htmlspecialchars($row['position'] ?? '-'); ?></td>
                     <td>
                         <?php if ($evaluation): ?>
-                            <?php echo date('d/m/Y', strtotime($evaluation['completed_at'])); ?>
-                            <br>
+                            <?php if (isset($evaluation['eval_month']) && isset($evaluation['eval_year'])): ?>
+                                <strong>Tháng <?php echo $evaluation['eval_month']; ?>/<?php echo $evaluation['eval_year']; ?></strong>
+                                <br>
+                            <?php endif; ?>
                             <small style="color: #666;">Điểm: <?php echo number_format($evaluation['final_score'], 1); ?>/5</small>
+                            <?php if (isset($evaluation['days_off']) && $evaluation['days_off'] > 0): ?>
+                            <br><small style="color: #ef4444;"><i class="fas fa-calendar-minus"></i> Nghỉ <?php echo $evaluation['days_off']; ?> ngày</small>
+                            <?php endif; ?>
                         <?php else: ?>
                             <span style="color: #999;">Chưa có đánh giá</span>
                         <?php endif; ?>
@@ -461,7 +394,6 @@ $stats = [
                                 <i class="fas fa-history"></i> Lịch sử
                             </button>
                             <?php if ($evaluation): ?>
-                            <?php if (!$isViewOnly): ?>
                             <a href="sua-danh-gia.php?id=<?php echo $evaluation['id']; ?>&employee_id=<?php echo $row['id']; ?>" class="btn-sm" style="background: #f59e0b; color: white; text-decoration: none;" title="Sửa đánh giá gần nhất">
                                 <i class="fas fa-edit"></i> Sửa
                             </a>
@@ -469,12 +401,9 @@ $stats = [
                                 <i class="fas fa-trash"></i> Xóa
                             </button>
                             <?php endif; ?>
-                            <?php endif; ?>
-                            <?php if (!$isViewOnly): ?>
                             <button class="btn-sm btn-success" onclick="taoDanhGia(<?php echo $row['id']; ?>, '<?php echo htmlspecialchars($row['full_name']); ?>')" title="Tạo đánh giá mới">
-                                <i class="fas fa-plus"></i> Đánh giá
+                                <i class="fas fa-plus"></i> <?php echo $evaluation ? 'Đánh giá lại' : 'Đánh giá'; ?>
                             </button>
-                            <?php endif; ?>
                         </div>
                     </td>
                 </tr>

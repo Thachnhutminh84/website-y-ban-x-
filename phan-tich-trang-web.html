@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>PHÂN TÍCH WEBSITE UBND XÃ LONG HIỆP</title>
+    <style>
+        body { font-family: 'Times New Roman', serif; font-size: 14px; line-height: 1.8; margin: 40px; color: #333; }
+        h1 { text-align: center; font-size: 22px; color: #1d4ed8; border-bottom: 3px solid #1d4ed8; padding-bottom: 10px; }
+        h2 { font-size: 18px; color: #b91c1c; margin-top: 30px; border-left: 4px solid #b91c1c; padding-left: 12px; }
+        h3 { font-size: 16px; color: #1d4ed8; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th, td { border: 1px solid #ccc; padding: 8px 12px; text-align: left; font-size: 13px; }
+        th { background: #1d4ed8; color: white; }
+        tr:nth-child(even) { background: #f0f7ff; }
+        .strength { color: #059669; font-weight: bold; }
+        .weakness { color: #dc2626; font-weight: bold; }
+        .info { background: #eff6ff; border: 1px solid #bfdbfe; padding: 12px; border-radius: 6px; margin: 10px 0; }
+        .warning { background: #fef3c7; border: 1px solid #fde68a; padding: 12px; border-radius: 6px; margin: 10px 0; }
+        .danger { background: #fef2f2; border: 1px solid #fecaca; padding: 12px; border-radius: 6px; margin: 10px 0; }
+        ul { margin: 5px 0; padding-left: 20px; }
+        li { margin: 3px 0; }
+        .page-break { page-break-before: always; }
+    </style>
+</head>
+<body>
+
+<h1>PHÂN TÍCH WEBSITE<br>UBND XÃ LONG HIỆP — TỈNH VĨNH LONG</h1>
+
+<div class="info">
+    <strong>Đối tượng:</strong> Website cổng thông tin điện tử UBND xã Long Hiệp<br>
+    <strong>Công nghệ:</strong> PHP 8.2 + MariaDB 10.4 + HTML/CSS/JS<br>
+    <strong>Số lượng file PHP:</strong> ~140 file | <strong>Số bảng CSDL:</strong> 45 bảng + 1 view<br>
+    <strong>Ngày phân tích:</strong> 10/06/2026
+</div>
+
+<!-- ======================== PHẦN 1: ĐIỂM MẠNH ======================== -->
+<h2>I. ĐIỂM MẠNH CỦA WEBSITE</h2>
+
+<h3>1. Hệ thống xác thực & phân quyền đa tầng</h3>
+<ul>
+    <li class="strength">✦ Xác thực bcrypt (cost 12) — an toàn, khó brute-force</li>
+    <li class="strength">✦ Phân quyền 3 cấp: Admin / Editor (cán bộ) / Viewer (nhân dân)</li>
+    <li class="strength">✦ Hệ thống phê duyệt tài khoản: đăng ký → chờ admin duyệt → mới đăng nhập được</li>
+    <li class="strength">✦ Session regeneration khi login/logout — chống session fixation</li>
+    <li class="strength">✦ Rate limiting đăng nhập: tối đa 5 lần / 300 giây</li>
+</ul>
+
+<h3>2. Bảo mật</h3>
+<ul>
+    <li class="strength">✦ CSRF token trên form đăng ký và đăng nhập</li>
+    <li class="strength">✦ Prepared statements (mysqli) ngăn SQL injection ở hầu hết các trang</li>
+    <li class="strength">✦ Security headers: X-Frame-Options, X-XSS-Protection, X-Content-Type-Options, CSP</li>
+    <li class="strength">✦ .htaccess chặn truy cập file nhạy cảm: .env, config.php, create-admin.php, phpinfo.php</li>
+    <li class="strength">✦ Session cookie: HttpOnly + SameSite=Strict + strict_mode</li>
+    <li class="strength">✦ Audit logging: ghi lại login, thay đổi dữ liệu, truy cập file, lỗi hệ thống</li>
+    <li class="strength">✦ Soft delete helper với whitelist bảng —防止 SQL injection qua tên bảng</li>
+    <li class="strength">✦ XSS filter cho nội dung tin tức: loại bỏ &lt;script&gt;, on* events, javascript:</li>
+</ul>
+
+<h3>3. Kiến trúc mã nguồn</h3>
+<ul>
+    <li class="strength">✦ Phân tách rõ ràng: config, auth, UI components (header/footer), business logic</li>
+    <li class="strength">✦ Hệ thống API RESTful: api-search, api-salary, api-bonus, api-contact, api-video...</li>
+    <li class="strength">✦ Environment variables qua .env + EnvLoader class</li>
+    <li class="strength">✦ Cache helper (file-based) với TTL</li>
+    <li class="strength">✦ Breadcrumb system tự động</li>
+    <li class="strength">✦ Quick actions toolbar cho người dùng</li>
+</ul>
+
+<h3>4. Chức năng nghiệp vụ</h3>
+<ul>
+    <li class="strength">✦ Quản lý tin tức: CRUD đầy đủ, phân loại, phân trang, tìm kiếm</li>
+    <li class="strength">✦ Quản lý video: album, lượt xem, embed YouTube/local</li>
+    <li class="strength">✦ Quản lý phòng ban & nhân sự: 45+ nhân viên, 3 phòng chuyên môn theo NĐ 150</li>
+    <li class="strength">✦ Hệ thống lương: tính lương theo hệ số, ngày nghỉ, xuất Excel theo tháng</li>
+    <li class="strength">✦ Đánh giá hiệu suất: 5 tiêu chí, đánh giá theo quý</li>
+    <li class="strength">✦ Chatbot hỗ trợ người dân</li>
+    <li class="strength">✦ Danh bạ điện thoại, thư viện form/tài liệu</li>
+    <li class="strength">✦ Liên hệ phản ánh: mã ticket tự động, theo dõi trạng thái</li>
+    <li class="strength">✦ Tìm kiếm toàn cục: tin tức, video, nhân sự, phòng ban, lãnh đạo</li>
+</ul>
+
+<h3>5. Giao diện người dùng</h3>
+<ul>
+    <li class="strength">✦ Responsive design: hoạt động trên desktop, tablet, mobile</li>
+    <li class="strength">✦ CSS variables nhất quán, gradient & animation hiện đại</li>
+    <li class="strength">✦ Font lớn (17-22px) — dễ đọc cho đối tượng người dân</li>
+    <li class="strength">✦ Hero section với thống kê trực quan</li>
+    <li class="strength">✦ Trang Giới thiệu chi tiết về Nghị định 150 và 3 phòng ban mới</li>
+</ul>
+
+<!-- ======================== PHẦN 2: ĐIỂM YẾU ======================== -->
+<div class="page-break"></div>
+<h2>II. ĐIỂM YẾU & LỖI BẢO MẬT</h2>
+
+<h3>1. Lỗi bảo mật NGHIÊM TRỌNG</h3>
+
+<div class="danger">
+    <strong>🔴 CRITICAL:</strong> Thông tin admin hardcoded trong mã nguồn<br>
+    File: create-admin.php — username: admin, password: Mi@131204 (plaintext)<br>
+    → Mặc dù .htaccess chặn, nhưng vẫn nằm trong git repo. Nếu deploy sai cách → lộ ngay.
+</div>
+
+<div class="danger">
+    <strong>🔴 CRITICAL:</strong> MySQL root không có mật khẩu<br>
+    File: .env — DB_PASS=<br>
+    → Database mở toang nếu server có lỗ hổng khác.
+</div>
+
+<div class="danger">
+    <strong>🔴 CRITICAL:</strong> Deserialization vulnerability<br>
+    File: cache-helper.php dùng unserialize() trên nội dung file cache<br>
+    → Nếu attacker ghi được file cache → PHP object injection → RCE.
+</div>
+
+<h3>2. Lỗi bảo mật CAO</h3>
+
+<div class="warning">
+    <strong>🟠 HIGH:</strong> SQL Injection tại xu-ly-them-thanh-vien.php<br>
+    Dòng 77: WHERE department_id = $department_id (không prepared statement)<br>
+    → Biến $department_id được拼 vào SQL trực tiếp.
+</div>
+
+<div class="warning">
+    <strong>🟠 HIGH:</strong> Thiếu CSRF token trên nhiều POST endpoint<br>
+    Các trang: quan-ly-phe-duyet.php, quan-ly-nguoi-dung.php, xoa-tin.php<br>
+    → Hành động approve/reject/xóa có thể bị CSRF attack.
+</div>
+
+<div class="warning">
+    <strong>🟠 HIGH:</strong> Rate limiting chỉ dựa vào Session<br>
+    → Attacker xóa cookie hoặc dùng session mới → bypass rate limit hoàn toàn.
+</div>
+
+<div class="warning">
+    <strong>🟠 HIGH:</strong> Script setup/migration không được bảo vệ<br>
+    run-hr-system.php, run-create-bonus-table.php, setup-department-staff.php<br>
+    → Nếu truy cập được → chạy SQL tùy ý.
+</div>
+
+<h3>3. Lỗi bảo mật TRUNG BÌNH</h3>
+
+<div class="info">
+    <strong>🟡 MEDIUM:</strong> IP spoofing trong audit logger<br>
+    Dùng HTTP_CLIENT_IP và HTTP_X_FORWARDED_FOR → attacker giả IP dễ dàng.
+</div>
+
+<div class="info">
+    <strong>🟡 MEDIUM:</strong> Xóa dữ liệu cứng (hard delete)<br>
+    xoa-tin.php dùng DELETE FROM thay vì soft delete → mất dữ liệu vĩnh viễn.
+</div>
+
+<div class="info">
+    <strong>🟡 MEDIUM:</strong> Một số API endpoint không kiểm tra đăng nhập<br>
+    api-search.php, api-get-video-info.php → data lộ với người lạ.
+</div>
+
+<div class="info">
+    <strong>🟡 MEDIUM:</strong> error_reporting(E_ALL) ở một số file<br>
+    → Hiển thị lỗi PHP cho người dùng cuối.
+</div>
+
+<h3>4. Vấn đề kiến trúc & mã nguồn</h3>
+
+<ul>
+    <li class="weakness">✗ Quá nhiều file trùng lặp: 3-4 phiên bản API cùng chức năng (api-department-staff, api-department-staff-db, api-department-staff-simple)</li>
+    <li class="weakness">✗ File backup nằm ngay trong thư mục gốc (index-backup, department-data-backup...)</li>
+    <li class="weakness">✗ Hardcoded arrays trong department-data.php thay vì query database</li>
+    <li class="weakness">✗ Danh bạ điện thoại dùng mảng PHP cứng trong code thay vì database</li>
+    <li class="weakness">✗ Nhiều inline CSS trong PHP (dang-ky.php 300+ dòng CSS)</li>
+    <li class="weakness">✗ Không có unit test hay integration test nào</li>
+    <li class="weakness">✗ Không có migration system rõ ràng — dùng file SQL + script PHP chạy tay</li>
+    <li class="weakness">✗ Thiếu API documentation</li>
+    <li class="weakness">✗ Không có HTTPS enforcement</li>
+    <li class="weakness">✗ mkdir với quyền 0777 (quá rộng)</li>
+</ul>
+
+<!-- ======================== PHẦN 3: CƠ SỞ DỮ LIỆU ======================== -->
+<div class="page-break"></div>
+<h2>III. CƠ SỞ DỮ LIỆU — LIỆT KÊ TẤT CẢ BẢNG</h2>
+
+<div class="info">
+    <strong>CSDL:</strong> ubnd_longhiep | <strong>Engine:</strong> MariaDB 10.4.32 (InnoDB) | <strong>Charset:</strong> utf8mb4<br>
+    <strong>Tổng số bảng:</strong> 45 bảng + 1 view
+</div>
+
+<table>
+    <tr><th>#</th><th>Tên bảng</th><th>Mô tả</th><th>Số cột chính</th></tr>
+    <tr><td>1</td><td>users</td><td>Tài khoản người dùng (admin/editor/viewer, can_bo/nguoi_dan)</td><td>22 cột</td></tr>
+    <tr><td>2</td><td>user_approval_history</td><td>Lịch sử phê duyệt tài khoản</td><td>7 cột</td></tr>
+    <tr><td>3</td><td>departments</td><td>Phòng ban (code, tên, SĐT, email, chức năng)</td><td>15 cột</td></tr>
+    <tr><td>4</td><td>department_staff</td><td>Nhân sự phòng ban (lương cơ bản, hệ số lương)</td><td>14 cột</td></tr>
+    <tr><td>5</td><td>leaders</td><td>Lãnh đạo UBND xã (thông tin cá nhân chi tiết)</td><td>38 cột</td></tr>
+    <tr><td>6</td><td>leader_work_history</td><td>Lịch sử công tác lãnh đạo</td><td>5 cột</td></tr>
+    <tr><td>7</td><td>news</td><td>Tin tức bài viết (title, slug, content, image, views)</td><td>14 cột</td></tr>
+    <tr><td>8</td><td>categories</td><td>Loại tin tức</td><td>6 cột</td></tr>
+    <tr><td>9</td><td>news_media</td><td>Liên kết tin tức — media</td><td>5 cột</td></tr>
+    <tr><td>10</td><td>videos</td><td>Video (YouTube/local, album, lượt xem)</td><td>14 cột</td></tr>
+    <tr><td>11</td><td>video_albums</td><td>Album video</td><td>8 cột</td></tr>
+    <tr><td>12</td><td>saved_videos</td><td>Video đã lưu</td><td>4 cột</td></tr>
+    <tr><td>13</td><td>media</td><td>Thư viện media (ảnh, video, tài liệu)</td><td>14 cột</td></tr>
+    <tr><td>14</td><td>galleries</td><td>Bộ sưu tập ảnh</td><td>11 cột</td></tr>
+    <tr><td>15</td><td>gallery_media</td><td>Liên kết gallery — media</td><td>5 cột</td></tr>
+    <tr><td>16</td><td>contacts</td><td>Phản ánh kiến nghị (mã ticket, trạng thái, ưu tiên)</td><td>13 cột</td></tr>
+    <tr><td>17</td><td>danh_ba_dien_thoai</td><td>Danh bạ điện thoại cán bộ</td><td>9 cột</td></tr>
+    <tr><td>18</td><td>forms</td><td>Thư viện form/tài liệu tải về</td><td>12 cột</td></tr>
+    <tr><td>19</td><td>documents</td><td>Quản lý văn bản (số VB, ký hiệu, loại VB, ưu tiên, bảo mật)</td><td>25 cột</td></tr>
+    <tr><td>20</td><td>document_types</td><td>Loại văn bản</td><td>5 cột</td></tr>
+    <tr><td>21</td><td>document_attachments</td><td>File đính kèm văn bản</td><td>8 cột</td></tr>
+    <tr><td>22</td><td>document_history</td><td>Lịch sử xử lý văn bản</td><td>7 cột</td></tr>
+    <tr><td>23</td><td>administrative_procedures</td><td>Thủ tục hành chính (410 TTHC)</td><td>21 cột</td></tr>
+    <tr><td>24</td><td>chat_messages</td><td>Tin nhắn chat</td><td>6 cột</td></tr>
+    <tr><td>25</td><td>chat_online_status</td><td>Trạng thái online</td><td>4 cột</td></tr>
+    <tr><td>26</td><td>activity_logs</td><td>Nhật ký hoạt động</td><td>8 cột</td></tr>
+    <tr><td>27</td><td>attendance</td><td>Chấm công (check-in/out, giờ làm, trạng thái)</td><td>8 cột</td></tr>
+    <tr><td>28</td><td>hr_employees</td><td>Nhân sự HR (CCCD, học vấn, hợp đồng, lương)</td><td>33 cột</td></tr>
+    <tr><td>29</td><td>employee_profiles</td><td>Hồ sơ nhân viên (giáo dục, địa chỉ, lương)</td><td>24 cột</td></tr>
+    <tr><td>30</td><td>hr_evaluation_criteria</td><td>Tiêu chí đánh giá hiệu suất</td><td>9 cột</td></tr>
+    <tr><td>31</td><td>hr_evaluation_periods</td><td>Kỳ đánh giá (tháng/quý/nửa năm/năm)</td><td>9 cột</td></tr>
+    <tr><td>32</td><td>hr_evaluation_scores</td><td>Điểm đánh giá chi tiết</td><td>7 cột</td></tr>
+    <tr><td>33</td><td>hr_performance_evaluations</td><td>Đánh giá hiệu suất tổng hợp</td><td>16 cột</td></tr>
+    <tr><td>34</td><td>hr_goals</td><td>Mục tiêu nhân viên</td><td>9 cột</td></tr>
+    <tr><td>35</td><td>hr_leave</td><td>Đơn xin nghỉ phép</td><td>12 cột</td></tr>
+    <tr><td>36</td><td>hr_bonuses</td><td>Thưởng nhân viên</td><td>8 cột</td></tr>
+    <tr><td>37</td><td>hr_rewards_disciplines</td><td>Khen thưởng — kỷ luật</td><td>10 cột</td></tr>
+    <tr><td>38</td><td>hr_training</td><td>Đào tạo nhân viên</td><td>10 cột</td></tr>
+    <tr><td>39</td><td>hr_work_history</td><td>Lịch sử công tác nhân viên</td><td>7 cột</td></tr>
+    <tr><td>40</td><td>payroll</td><td>Bảng lương (tháng, lương cơ bản, phụ cấp, thưởng, khấu trừ)</td><td>10 cột</td></tr>
+    <tr><td>41</td><td>performance_reviews</td><td>Đánh giá hiệu suất (phiên bản cũ)</td><td>9 cột</td></tr>
+    <tr><td>42</td><td>leave_requests</td><td>Đơn xin nghỉ (phiên bản cũ)</td><td>10 cột</td></tr>
+    <tr><td>43</td><td>training_programs</td><td>Chương trình đào tạo</td><td>8 cột</td></tr>
+    <tr><td>44</td><td>training_participants</td><td>Tham gia đào tạo</td><td>5 cột</td></tr>
+    <tr><td>45</td><td>saved_files</td><td>File đã lưu (tạo động trong PHP)</td><td>7 cột</td></tr>
+    <tr><td>46</td><td><em>pending_users</em> (VIEW)</td><td>View hiển thị user chờ duyệt</td><td>8 cột</td></tr>
+</table>
+
+<!-- ======================== PHẦN 4: ĐỀ XUẤT CẢI TIẾN ======================== -->
+<div class="page-break"></div>
+<h2>IV. ĐỀ XUẤT CẢI TIẾP</h2>
+
+<h3>Ưu tiên cao (nên làm ngay)</h3>
+<ol>
+    <li><strong>Xóa create-admin.php</strong> hoặc chuyển mật khẩu sang .env</li>
+    <li><strong>Đặt mật khẩu MySQL</strong> cho tài khoản root</li>
+    <li><strong>Thay unserialize()</strong> bằng json_decode() trong cache-helper.php</li>
+    <li><strong>Thêm prepared statement</strong> cho $department_id trong xu-ly-them-thanh-vien.php</li>
+    <li><strong>Thêm CSRF token</strong> cho tất cả POST endpoint (phê duyệt, xóa, chỉnh sửa)</li>
+    <li><strong>Thêm auth check</strong> cho các script setup/migration</li>
+</ol>
+
+<h3>Ưu tiên trung bình</h3>
+<ol>
+    <li>Thay rate limiting session-based bằng IP-based hoặc database-backed</li>
+    <li>Sử dụng soft delete thay vì hard delete cho tất cả bảng</li>
+    <li>Thêm auth check cho API endpoints công khai</li>
+    <li>Tắt error_reporting ở môi trường production</li>
+    <li>Xóa các file backup khỏi thư mục gốc</li>
+    <li>Triển khai HTTPS</li>
+</ol>
+
+<h3>Ưu tiên thấp (cải tiến dài hạn)</h3>
+<ol>
+    <li>Loại bỏ file trùng lặp (3-4 phiên bản API)</li>
+    <li>Chuyển hardcoded arrays sang database</li>
+    <li>Thêm unit test & integration test</li>
+    <li>Xây dựng migration system chính thức</li>
+    <li>Viết API documentation</li>
+    <li>Tách inline CSS ra file .css riêng</li>
+</ol>
+
+<h2>V. ĐÁNH GIÁ TỔNG QUAN</h2>
+
+<table>
+    <tr><th>Tiêu chí</th><th>Điểm (1-10)</th><th>Ghi chú</th></tr>
+    <tr><td>Chức năng</td><td><strong>8/10</strong></td><td>Đầy đủ tính năng cho UBND xã: tin tức, phòng ban, lương, đánh giá, chatbot</td></tr>
+    <tr><td>Bảo mật</td><td><strong>5/10</strong></td><td>Có nền tảng tốt nhưng còn lỗ hổng nghiêm trọng (hardcoded pass, unserialize, CSRF)</td></tr>
+    <tr><td>Giao diện</td><td><strong>8/10</strong></td><td>Responsive, font lớn dễ đọc, thiết kế hiện đại</td></tr>
+    <tr><td>Kiến trúc</td><td><strong>5/10</strong></td><td>Quá nhiều file trùng lặp, thiếu test, thiếu migration</td></tr>
+    <tr><td>Cơ sở dữ liệu</td><td><strong>7/10</strong></td><td>45 bảng đầy đủ, nhưng một số bảng trùng chức năng (hr_employees vs department_staff)</td></tr>
+    <tr><td>Hiệu năng</td><td><strong>6/10</strong></td><td>Có cache helper nhưng chưa tận dụng triệt để, query chưa optimize</td></tr>
+    <tr><td><strong>TỔNG</strong></td><td><strong>6.5/10</strong></td><td>Website tốt cho quy mô xã, cần fix bảo mật trước khi production</td></tr>
+</table>
+
+</body>
+</html>

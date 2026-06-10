@@ -306,6 +306,12 @@ th {
             <div class="label">Ngày đánh giá</div>
             <div class="value"><?php echo date('d/m/Y', strtotime($evaluation['completed_at'])); ?></div>
         </div>
+        <?php if (isset($evaluation['eval_month']) && isset($evaluation['eval_year'])): ?>
+        <div class="info-card">
+            <div class="label">Tháng đánh giá</div>
+            <div class="value">Tháng <?php echo $evaluation['eval_month']; ?>/<?php echo $evaluation['eval_year']; ?></div>
+        </div>
+        <?php endif; ?>
     </div>
 
     <div class="score-summary">
@@ -320,6 +326,12 @@ th {
         <p style="color: #666; margin-top: 15px;">
             Người đánh giá: <strong><?php echo $evaluation['evaluator_name']; ?></strong>
         </p>
+        <?php if (isset($evaluation['days_off'])): ?>
+        <p style="color: #333; margin-top: 8px; font-size: 16px;">
+            <i class="fas fa-calendar-minus" style="color: #ef4444;"></i>
+            Số ngày nghỉ: <strong style="color: #ef4444;"><?php echo $evaluation['days_off']; ?> ngày</strong>
+        </p>
+        <?php endif; ?>
     </div>
 
     <div class="criteria-table">

@@ -175,8 +175,8 @@ $conn->close();
 
             <div class="form-group">
                 <label>Lương cơ bản (VNĐ)</label>
-                <input type="number" name="basic_salary" step="10000" min="0" value="5000000"
-                       placeholder="Ví dụ: 5000000">
+                <input type="number" name="basic_salary" step="10000" min="0" value="2530000"
+                       placeholder="Ví dụ: 2530000">
                 <small>Mức lương cơ bản hàng tháng</small>
             </div>
 

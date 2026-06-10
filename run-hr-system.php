@@ -1,5 +1,12 @@
 <?php
 require_once 'config.php';
+require_once 'auth.php';
+
+if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+if (!authIsLoggedIn() || !authIsAdmin()) {
+    http_response_code(403);
+    die("403 Forbidden — Chỉ admin mới có quyền truy cập script này.");
+}
 
 $conn = getDBConnection();
 

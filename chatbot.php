@@ -468,7 +468,7 @@
         },
         {
             keywords: ['địa chỉ', 'ở đâu', 'nơi nào', 'trụ sở', 'vị trí', 'map'],
-            response: 'Trụ sở UBND xã Long Hiệp, huyện Long Hồ, tỉnh Vĩnh Long. Bạn có thể xem bản đồ tại trang Liên hệ.'
+            response: 'Trụ sở UBND xã Long Hiệp, tỉnh Vĩnh Long. Bạn có thể xem bản đồ tại trang Liên hệ.'
         },
         {
             keywords: ['dịch vụ', 'công', 'trực tuyến', 'online', 'mạng'],

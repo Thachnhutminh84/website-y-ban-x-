@@ -202,8 +202,8 @@ $conn->close();
             <div class="form-group">
                 <label>Lương cơ bản (VNĐ)</label>
                 <input type="number" name="basic_salary" step="10000" min="0" 
-                       value="<?php echo $member['basic_salary'] ?? 5000000; ?>"
-                       placeholder="Ví dụ: 5000000">
+                       value="<?php echo $member['basic_salary'] ?? 2530000; ?>"
+                       placeholder="Ví dụ: 2530000">
                 <small>Mức lương cơ bản hàng tháng</small>
             </div>
 
@@ -245,5 +245,17 @@ $conn->close();
     </div>
 
     <?php include 'footer.php'; ?>
+    <script>
+    function toggleSalaryEdit() {
+        var input = document.getElementById('salaryInput');
+        if (input.readOnly) {
+            input.readOnly = false;
+            input.style.backgroundColor = '#fff';
+        } else {
+            input.readOnly = true;
+            input.style.backgroundColor = '#f5f5f5';
+        }
+    }
+    </script>
 </body>
 </html>

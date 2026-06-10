@@ -47,7 +47,7 @@ class CacheHelper {
             'created_at' => time()
         ];
         
-        return file_put_contents($cacheFile, serialize($data), LOCK_EX) !== false;
+        return file_put_contents($cacheFile, json_encode($data), LOCK_EX) !== false;
     }
     
     /**
@@ -64,7 +64,7 @@ class CacheHelper {
             return $default;
         }
         
-        $data = unserialize(file_get_contents($cacheFile));
+        $data = json_decode(file_get_contents($cacheFile), true);
         
         // Check if expired
         if ($data['expires_at'] < time()) {
@@ -89,7 +89,7 @@ class CacheHelper {
             return false;
         }
         
-        $data = unserialize(file_get_contents($cacheFile));
+        $data = json_decode(file_get_contents($cacheFile), true);
         
         return $data['expires_at'] >= time();
     }

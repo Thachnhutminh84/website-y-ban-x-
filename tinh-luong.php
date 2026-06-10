@@ -11,18 +11,22 @@ $message = '';
 $messageType = '';
 $salaryResult = null;
 
-// Lấy danh sách nhân viên
+// Lấy danh sách nhân viên từ department_staff
 $employees = [];
 $conn = getDBConnection();
 if ($conn) {
-    $stmt = $conn->prepare("SELECT id, full_name, position, department_id FROM employees WHERE status = 'active' ORDER BY full_name ASC");
-    if ($stmt) {
-        $stmt->execute();
-        $result = $stmt->get_result();
+    $result = $conn->query("SELECT ds.id, ds.name, ds.position, ds.department_id, 
+                                   COALESCE(ds.basic_salary, 2530000) as basic_salary,
+                                   COALESCE(ds.salary_coefficient, 1.0) as salary_coefficient,
+                                   d.name as department_name
+                            FROM department_staff ds
+                            LEFT JOIN departments d ON ds.department_id = d.id
+                            WHERE ds.status = 'active'
+                            ORDER BY ds.name ASC");
+    if ($result) {
         while ($row = $result->fetch_assoc()) {
             $employees[] = $row;
         }
-        $stmt->close();
     }
 }
 
@@ -32,7 +36,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['calculate'])) {
     $year = (int)($_POST['year'] ?? date('Y'));
     
     // Lương cơ bản
-    $basicSalary = (float)($_POST['basic_salary'] ?? 0);
+    $basicSalary = (float)($_POST['basic_salary'] ?? 2530000);
+    
+    // Hệ số lương
+    $salaryCoefficient = (float)($_POST['salary_coefficient'] ?? 1.0);
     
     // Phụ cấp
     $positionAllowance = (float)($_POST['position_allowance'] ?? 0);
@@ -51,12 +58,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['calculate'])) {
     $advance = (float)($_POST['advance'] ?? 0);
     $otherDeduction = (float)($_POST['other_deduction'] ?? 0);
     
-    // Tính toán
+    // Số ngày nghỉ trong tháng
+    $daysOff = intval($_POST['days_off'] ?? 0);
+    $workingDaysPerMonth = 26;
+    
+    // Công thức chuẩn: Lương thực nhận = (Lương cơ bản × Hệ số) - [(Lương cơ bản × Hệ số) / 26 × Ngày nghỉ]
+    $baseSalaryReal = round($basicSalary * $salaryCoefficient);
+    $daysOffDeduction = round(($baseSalaryReal / $workingDaysPerMonth) * $daysOff);
+    $actualSalary = $baseSalaryReal - $daysOffDeduction;
+    
+    // Tính toán tổng
     $totalAllowance = $positionAllowance + $responsibilityAllowance + $regionalAllowance + $otherAllowance;
     $totalBonus = $performanceBonus + $holidayBonus + $otherBonus;
     $totalDeduction = $insurance + $tax + $advance + $otherDeduction;
     
-    $grossSalary = $basicSalary + $totalAllowance + $totalBonus;
+    $grossSalary = $actualSalary + $totalAllowance + $totalBonus;
     $netSalary = $grossSalary - $totalDeduction;
     
     $salaryResult = [
@@ -64,6 +80,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['calculate'])) {
         'month' => $month,
         'year' => $year,
         'basic_salary' => $basicSalary,
+        'salary_coefficient' => $salaryCoefficient,
+        'base_salary_real' => $baseSalaryReal,
+        'days_off' => $daysOff,
+        'days_off_deduction' => $daysOffDeduction,
+        'actual_salary' => $actualSalary,
         'total_allowance' => $totalAllowance,
         'total_bonus' => $totalBonus,
         'gross_salary' => $grossSalary,
@@ -85,34 +106,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['calculate'])) {
     ];
     
     // Lưu vào database nếu nhấn "Lưu"
-    if (isset($_POST['save'])) {
-        if ($conn) {
-            $stmt = $conn->prepare("
-                INSERT INTO salary_records 
-                (employee_id, month, year, basic_salary, position_allowance, responsibility_allowance, 
-                 regional_allowance, other_allowance, performance_bonus, holiday_bonus, other_bonus,
-                 insurance, tax, advance, other_deduction, gross_salary, net_salary, status, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'approved', NOW())
-            ");
-            
-            $stmt->bind_param('iiidddddddddddddd',
-                $employeeId, $month, $year, $basicSalary,
-                $positionAllowance, $responsibilityAllowance, $regionalAllowance, $otherAllowance,
-                $performanceBonus, $holidayBonus, $otherBonus,
-                $insurance, $tax, $advance, $otherDeduction,
-                $grossSalary, $netSalary
-            );
-            
-            if ($stmt->execute()) {
-                $_SESSION['success_message'] = 'Lưu bảng lương thành công!';
-                header('Location: thong-ke-luong-simple.php');
-                exit();
-            } else {
-                $message = 'Lỗi khi lưu dữ liệu.';
-                $messageType = 'error';
-            }
-            $stmt->close();
+    if (isset($_POST['save']) && $conn) {
+        $stmt = $conn->prepare("
+            UPDATE department_staff 
+            SET basic_salary = ?, salary_coefficient = ?
+            WHERE id = ? AND status = 'active'
+        ");
+        $stmt->bind_param('ddi', $basicSalary, $salaryCoefficient, $employeeId);
+        
+        if ($stmt->execute()) {
+            $_SESSION['success_message'] = 'Lưu bảng lương thành công!';
+            header('Location: thong-ke-luong-simple.php?month=' . $month . '&year=' . $year);
+            exit();
+        } else {
+            $message = 'Lỗi khi lưu dữ liệu.';
+            $messageType = 'error';
         }
+        $stmt->close();
     }
 }
 
@@ -156,12 +166,14 @@ $displayName = authDisplayName();
                         <div class="form-grid">
                             <div class="form-group">
                                 <label for="employee_id">Nhân viên *</label>
-                                <select id="employee_id" name="employee_id" required>
+                                <select id="employee_id" name="employee_id" required onchange="fillEmployeeData(this)">
                                     <option value="">-- Chọn nhân viên --</option>
                                     <?php foreach ($employees as $emp): ?>
-                                        <option value="<?php echo $emp['id']; ?>" 
+                                        <option value="<?php echo $emp['id']; ?>"
+                                                data-salary="<?php echo $emp['basic_salary']; ?>"
+                                                data-coefficient="<?php echo $emp['salary_coefficient']; ?>"
                                                 <?php echo ($salaryResult && $salaryResult['employee_id'] == $emp['id']) ? 'selected' : ''; ?>>
-                                            <?php echo htmlspecialchars($emp['full_name'] . ' - ' . $emp['position'], ENT_QUOTES, 'UTF-8'); ?>
+                                            <?php echo htmlspecialchars($emp['name'] . ' - ' . $emp['position'], ENT_QUOTES, 'UTF-8'); ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -190,10 +202,83 @@ $displayName = authDisplayName();
                             </div>
 
                             <div class="form-group">
+                                <label for="basic_salary">Lương cơ bản (VNĐ) *</label>
+                                <?php if (authIsAdmin()): ?>
+                                <input type="number" id="basic_salary" name="basic_salary" step="10000" min="0" required
+                                       value="<?php echo $salaryResult ? $salaryResult['basic_salary'] : '2530000'; ?>"
+                                       placeholder="2,530,000">
+                                <?php else: ?>
+                                <input type="number" id="basic_salary" name="basic_salary" step="10000" min="0" required
+                                       value="<?php echo $salaryResult ? $salaryResult['basic_salary'] : '2530000'; ?>"
+                                       readonly style="background-color: #f5f5f5;">
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="salary_coefficient">Hệ số lương *</label>
+                                <?php if (authIsAdmin()): ?>
+                                <input type="number" id="salary_coefficient" name="salary_coefficient" step="0.01" min="0" max="10" required
+                                       value="<?php echo $salaryResult ? $salaryResult['salary_coefficient'] : '1.0'; ?>"
+                                       placeholder="1.0">
+                                <?php else: ?>
+                                <input type="number" id="salary_coefficient" name="salary_coefficient" step="0.01" min="0" max="10" required
+                                       value="<?php echo $salaryResult ? $salaryResult['salary_coefficient'] : '1.0'; ?>"
+                                       readonly style="background-color: #f5f5f5;">
+                                <?php endif; ?>
+                                <small style="color: #666;">Lương thực nhận = (Cơ bản × Hệ số) - [(Cơ bản × Hệ số) / 26 × Ngày nghỉ]</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="days_off">Số ngày nghỉ trong tháng</label>
+                                <input type="number" id="days_off" name="days_off" min="0" max="31" step="1"
+                                       value="<?php echo $salaryResult ? $salaryResult['days_off'] : '0'; ?>"
+                                       placeholder="0">
+                                <small style="color: #666;">Công tiêu chuẩn: 26 ngày/tháng</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="month">Tháng *</label>
+                                <select id="month" name="month" required>
+                                    <?php for ($m = 1; $m <= 12; $m++): ?>
+                                        <option value="<?php echo $m; ?>" <?php echo ($salaryResult && $salaryResult['month'] == $m) || (!$salaryResult && $m == date('n')) ? 'selected' : ''; ?>>
+                                            Tháng <?php echo $m; ?>
+                                        </option>
+                                    <?php endfor; ?>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="year">Năm *</label>
+                                <select id="year" name="year" required>
+                                    <?php for ($y = date('Y'); $y >= date('Y') - 5; $y--): ?>
+                                        <option value="<?php echo $y; ?>" <?php echo ($salaryResult && $salaryResult['year'] == $y) || (!$salaryResult && $y == date('Y')) ? 'selected' : ''; ?>>
+                                            <?php echo $y; ?>
+                                        </option>
+                                    <?php endfor; ?>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
                                 <label for="basic_salary">Lương cơ bản *</label>
-                                <input type="number" id="basic_salary" name="basic_salary" step="1000" min="0" required
-                                       value="<?php echo $salaryResult ? $salaryResult['basic_salary'] : '5000000'; ?>"
-                                       placeholder="5,000,000">
+                                <input type="number" id="salaryInput" name="basic_salary" step="1000" min="0" required
+                                       value="<?php echo $salaryResult ? $salaryResult['basic_salary'] : '2530000'; ?>"
+                                       placeholder="2,530,000" readonly
+                                       style="background-color: #f5f5f5;">
+                                <small style="color: #666;">
+                                    <?php if (authIsAdmin()): ?>
+                                    <button type="button" onclick="toggleSalaryEdit()" style="margin-top:5px; padding:3px 10px; font-size:12px; cursor:pointer; background:#007bff; color:white; border:none; border-radius:3px;">Cho phép sửa</button>
+                                    <?php else: ?>
+                                    Chỉ admin mới có quyền sửa lương
+                                    <?php endif; ?>
+                                </small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="days_off">Số ngày nghỉ trong tháng</label>
+                                <input type="number" id="days_off" name="days_off" min="0" max="31" step="1"
+                                       value="<?php echo $salaryResult ? $salaryResult['days_off'] : '0'; ?>"
+                                       placeholder="0">
+                                <small style="color: #666;">Lương = (Cơ bản / 26) × (26 - Ngày nghỉ)</small>
                             </div>
                         </div>
                     </div>
@@ -310,6 +395,26 @@ $displayName = authDisplayName();
                             <div class="result-item">
                                 <span class="label">Lương cơ bản:</span>
                                 <span class="value"><?php echo number_format($salaryResult['basic_salary'], 0, ',', '.'); ?> đ</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="label">Hệ số lương:</span>
+                                <span class="value"><?php echo $salaryResult['salary_coefficient']; ?></span>
+                            </div>
+                            <div class="result-item">
+                                <span class="label">Lương cơ bản × Hệ số:</span>
+                                <span class="value"><?php echo number_format($salaryResult['base_salary_real'], 0, ',', '.'); ?> đ</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="label">Số ngày nghỉ:</span>
+                                <span class="value" style="<?php echo $salaryResult['days_off'] > 0 ? 'color: #ef4444;' : ''; ?>"><?php echo $salaryResult['days_off']; ?> ngày</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="label">Trừ ngày nghỉ:</span>
+                                <span class="value negative">-<?php echo number_format($salaryResult['days_off_deduction'], 0, ',', '.'); ?> đ</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="label">Lương thực nhận:</span>
+                                <span class="value"><?php echo number_format($salaryResult['actual_salary'], 0, ',', '.'); ?> đ</span>
                             </div>
                             <div class="result-item">
                                 <span class="label">Tổng phụ cấp:</span>
@@ -486,11 +591,22 @@ $displayName = authDisplayName();
     </style>
 
     <script>
+    // Auto fill salary data when selecting employee
+    function fillEmployeeData(select) {
+        var option = select.options[select.selectedIndex];
+        if (option.value) {
+            var salary = option.getAttribute('data-salary');
+            var coefficient = option.getAttribute('data-coefficient');
+            if (salary) document.getElementById('basic_salary').value = salary;
+            if (coefficient) document.getElementById('salary_coefficient').value = coefficient;
+        }
+    }
+
     // Auto format số tiền khi nhập
     document.querySelectorAll('input[type="number"]').forEach(input => {
         input.addEventListener('blur', function() {
             if (this.value) {
-                this.value = Math.round(parseFloat(this.value));
+                this.value = Math.round(parseFloat(this.value) * 100) / 100;
             }
         });
     });

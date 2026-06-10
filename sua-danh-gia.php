@@ -106,6 +106,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $strengths = trim($_POST['strengths']);
         $weaknesses = trim($_POST['weaknesses']);
         $recommendations = trim($_POST['recommendations'] ?? '');
+        $days_off = intval($_POST['days_off'] ?? 0);
+        $eval_month = intval($_POST['eval_month'] ?? date('n'));
+        $eval_year = intval($_POST['eval_year'] ?? date('Y'));
         
         // Đọc lại tất cả đánh giá
         $all_evaluations = [];
@@ -122,6 +125,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $all_evaluations[$key]['manager_comments'] = $manager_comments;
                 $all_evaluations[$key]['strengths'] = $strengths;
                 $all_evaluations[$key]['weaknesses'] = $weaknesses;
+                $all_evaluations[$key]['days_off'] = $days_off;
+                $all_evaluations[$key]['eval_month'] = $eval_month;
+                $all_evaluations[$key]['eval_year'] = $eval_year;
                 $all_evaluations[$key]['recommendations'] = $recommendations;
                 $all_evaluations[$key]['updated_at'] = date('Y-m-d H:i:s');
                 break;
@@ -406,6 +412,28 @@ include 'header-menu.php';
                             <option value="satisfactory" <?php echo $evaluation['rating'] === 'satisfactory' ? 'selected' : ''; ?>>Đạt (2.5-3.4)</option>
                             <option value="needs_improvement" <?php echo $evaluation['rating'] === 'needs_improvement' ? 'selected' : ''; ?>>Cần cải thiện (0-2.4)</option>
                         </select>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 15px;">
+                    <div class="form-group">
+                        <label for="eval_month">Tháng đánh giá</label>
+                        <select name="eval_month" id="eval_month" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                            <?php for ($m = 1; $m <= 12; $m++): ?>
+                            <option value="<?php echo $m; ?>" <?php echo ($evaluation['eval_month'] ?? date('n')) == $m ? 'selected' : ''; ?>>Tháng <?php echo $m; ?></option>
+                            <?php endfor; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="eval_year">Năm</label>
+                        <select name="eval_year" id="eval_year" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                            <?php for ($y = date('Y'); $y >= date('Y') - 2; $y--): ?>
+                            <option value="<?php echo $y; ?>" <?php echo ($evaluation['eval_year'] ?? date('Y')) == $y ? 'selected' : ''; ?>><?php echo $y; ?></option>
+                            <?php endfor; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="days_off">Số ngày nghỉ trong tháng</label>
+                        <input type="number" name="days_off" id="days_off" min="0" max="31" value="<?php echo $evaluation['days_off'] ?? 0; ?>" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
                     </div>
                 </div>
             </div>

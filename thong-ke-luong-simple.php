@@ -14,6 +14,141 @@ try {
     exit();
 }
 
+// Export Excel/CSV
+if (isset($_GET['export']) && $_GET['export'] === '1') {
+    $export_month = intval($_GET['month'] ?? date('n'));
+    $export_year = intval($_GET['year'] ?? date('Y'));
+
+    $export_data = [];
+    $conn_exp = getDBConnection();
+    $emp_id_filter = intval($_GET['emp_id'] ?? 0);
+    if ($conn_exp) {
+        $q = "SELECT ds.id, ds.name, ds.position, d.name as department,
+                     COALESCE(ds.basic_salary, 2530000) as salary,
+                     COALESCE(ds.salary_coefficient, 1.0) as coeff,
+                     ds.status
+              FROM department_staff ds
+              LEFT JOIN departments d ON ds.department_id = d.id
+              WHERE ds.status = 'active'";
+        if ($emp_id_filter > 0) {
+            $q .= " AND ds.id = " . $emp_id_filter;
+        }
+        $q .= " ORDER BY ds.basic_salary DESC";
+        $r = $conn_exp->query($q);
+        if ($r) {
+            while ($row = $r->fetch_assoc()) {
+                $export_data[] = $row;
+            }
+        }
+        $conn_exp->close();
+    }
+
+    $evals = [];
+    if (file_exists('data/evaluations.json')) {
+        $evals = json_decode(file_get_contents('data/evaluations.json'), true) ?? [];
+    }
+
+    $wd = 26;
+    foreach ($export_data as &$ex) {
+        $ex['days_off'] = 0;
+        foreach ($evals as $ev) {
+            $en = $ev['employee_name'] ?? '';
+            $em = intval($ev['eval_month'] ?? 0);
+            $ey = intval($ev['eval_year'] ?? 0);
+            if ($en === $ex['name'] || similar_text($en, $ex['name']) > 0.7 * max(strlen($en), strlen($ex['name']))) {
+                if ($em == $export_month && $ey == $export_year && isset($ev['days_off'])) {
+                    $ex['days_off'] = intval($ev['days_off']);
+                }
+            }
+        }
+        $c = floatval($ex['coeff']);
+        $base = $ex['salary'] * $c;
+        $ded = round(($base / $wd) * $ex['days_off']);
+        $ex['base_real'] = round($base);
+        $ex['deduction'] = $ded;
+        $ex['actual'] = round($base - $ded);
+    }
+    unset($ex);
+
+    $emp_name_str = '';
+    if ($emp_id_filter > 0 && count($export_data) > 0) {
+        $emp_name_str = '-' . preg_replace('/[^a-zA-Z0-9]/u', '', $export_data[0]['name']);
+    }
+
+    header('Content-Type: application/vnd.ms-excel; charset=utf-8');
+    header('Content-Disposition: attachment; filename="bang-luong-thang-' . $export_month . '-' . $export_year . $emp_name_str . '.xls"');
+
+    echo '<html xmlns:o="urn:schemas-microsoft-com:office:office"
+              xmlns:x="urn:schemas-microsoft-com:office:excel"
+              xmlns="http://www.w3.org/TR/REC-html40">
+              <head>
+              <meta charset="utf-8">
+              <!--[if gte mso 9]><xml>
+              <x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>
+              <x:Name>Bảng lương</x:Name>
+              <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>
+              </x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml>
+              <![endif]-->
+              <style>
+                  .title { font-size: 18px; font-weight: bold; color: #1d4ed8; }
+                  .subtitle { font-size: 13px; color: #555; }
+                  .header-row th {
+                      background: #2563eb; color: white; font-weight: bold;
+                      border: 1px solid #1d4ed8; padding: 8px 10px; text-align: center;
+                      font-size: 12px;
+                  }
+                  .data-row td {
+                      border: 1px solid #d1d5db; padding: 7px 10px; font-size: 12px;
+                  }
+                  .data-row:nth-child(even) { background: #f0f7ff; }
+                  .data-row:hover { background: #dbeafe; }
+                  .money { text-align: right; mso-number-format:"\\#\\,\\#\\#0"; }
+                  .center { text-align: center; }
+                  .total-row td {
+                      background: #fef3c7; font-weight: bold; border: 1px solid #d97706;
+                      padding: 8px 10px; font-size: 13px; color: #92400e;
+                  }
+              </style></head><body>';
+    
+    echo '<table cellpadding="0" cellspacing="0" style="border-collapse:collapse; min-width: 900px;">';
+    echo '<tr><td colspan="10" class="title" style="padding: 15px 10px 5px;">BẢNG LƯƠNG CÁN BỘ THÁNG ' . $export_month . '/' . $export_year . '</td></tr>';
+    echo '<tr><td colspan="10" class="subtitle" style="padding: 0 10px 15px;">UBND xã Long Hiệp, huyện Long Hồ, tỉnh Vĩnh Long</td></tr>';
+    
+    echo '<tr class="header-row">';
+    echo '<th>STT</th><th>Họ tên</th><th>Chức vụ</th><th>Phòng ban</th>';
+    echo '<th>Lương cơ bản</th><th>Hệ số</th><th>Lương CS × Hệ số</th>';
+    echo '<th>Ngày nghỉ</th><th>Trừ ngày nghỉ</th><th>Lương thực nhận</th>';
+    echo '</tr>';
+
+    $stt = 0;
+    $totalActual = 0;
+    foreach ($export_data as $ex) {
+        $stt++;
+        $totalActual += $ex['actual'];
+        $rowClass = ($stt % 2 == 0) ? 'even' : 'odd';
+        echo '<tr class="data-row">';
+        echo '<td class="center">' . $stt . '</td>';
+        echo '<td><b>' . htmlspecialchars($ex['name']) . '</b></td>';
+        echo '<td>' . htmlspecialchars($ex['position']) . '</td>';
+        echo '<td>' . htmlspecialchars($ex['department']) . '</td>';
+        echo '<td class="money">' . number_format($ex['salary'], 0, ',', '.') . '</td>';
+        echo '<td class="center">' . $ex['coeff'] . '</td>';
+        echo '<td class="money">' . number_format($ex['base_real'], 0, ',', '.') . '</td>';
+        echo '<td class="center">' . $ex['days_off'] . ' ngày</td>';
+        echo '<td class="money" style="color:#ef4444;">' . ($ex['deduction'] > 0 ? '-' . number_format($ex['deduction'], 0, ',', '.') : '0') . '</td>';
+        echo '<td class="money" style="color:#059669; font-weight:bold;">' . number_format($ex['actual'], 0, ',', '.') . '</td>';
+        echo '</tr>';
+    }
+
+    echo '<tr class="total-row">';
+    echo '<td colspan="9" style="text-align:right;">TỔNG CỘNG</td>';
+    echo '<td class="money" style="color:#059669; font-size:14px;">' . number_format($totalActual, 0, ',', '.') . '</td>';
+    echo '</tr>';
+
+    echo '</table></body></html>';
+    exit();
+}
+
 $isReadOnly = authIsReadOnly();
 $page_title = "Bảng lương cán bộ";
 
@@ -28,8 +163,8 @@ if ($conn_salary) {
                 ds.name,
                 ds.position,
                 d.name as department,
-                COALESCE(ds.basic_salary, 5000000) as salary,
-                COALESCE(ds.salary_coefficient, 0) as attendance_score,
+                COALESCE(ds.basic_salary, 2530000) as salary,
+                COALESCE(ds.salary_coefficient, 1.0) as attendance_score,
                 ds.status
               FROM department_staff ds
               LEFT JOIN departments d ON ds.department_id = d.id
@@ -47,7 +182,8 @@ if ($conn_salary) {
                 'department' => $row['department'] ?? 'Chưa phân công',
                 'salary' => $row['salary'],
                 'base_salary' => $row['salary'],
-                'attendance_score' => $row['attendance_score']
+                'salary_coefficient' => $row['attendance_score'],
+                'status' => $row['status']
             ];
         }
     }
@@ -61,6 +197,126 @@ usort($salary_data, function($a, $b) {
     $salary_b = $b['base_salary'] ?? $b['salary'] ?? 0;
     return $salary_b - $salary_a;
 });
+
+// Đọc dữ liệu đánh giá
+$evaluation_file = 'data/evaluations.json';
+$all_evaluations = [];
+if (file_exists($evaluation_file)) {
+    $all_evaluations = json_decode(file_get_contents($evaluation_file), true) ?? [];
+}
+
+// Tháng/năm hiện tại (hoặc từ URL)
+$current_month = intval($_GET['month'] ?? date('n'));
+$current_year = intval($_GET['year'] ?? date('Y'));
+
+// === TỰ ĐỘNG RESET THEO QUÝ ===
+// Quý 1: tháng 1-3, Quý 2: tháng 4-6, Quý 3: tháng 7-9, Quý 4: tháng 10-12
+$current_quarter = ceil($current_month / 3);
+$quarter_months = [
+    $current_quarter * 3 - 2,
+    $current_quarter * 3 - 1,
+    $current_quarter * 3
+];
+
+// Kiểm tra quý hiện tại đã có dữ liệu đánh giá chưa
+$has_quarter_data = false;
+foreach ($all_evaluations as $ev) {
+    $evMonth = intval($ev['eval_month'] ?? 0);
+    $evYear = intval($ev['eval_year'] ?? 0);
+    if ($evYear == $current_year && in_array($evMonth, $quarter_months)) {
+        $has_quarter_data = true;
+        break;
+    }
+}
+
+// Nếu chưa có đánh giá quý này → tự động tạo mặc định (0 ngày nghỉ)
+if (!$has_quarter_data) {
+    $conn_reset = getDBConnection();
+    if ($conn_reset) {
+        $r = $conn_reset->query("SELECT id, name FROM department_staff WHERE status = 'active'");
+        if ($r) {
+            $max_id = 0;
+            foreach ($all_evaluations as $ev) {
+                if (intval($ev['id'] ?? 0) > $max_id) $max_id = intval($ev['id']);
+            }
+
+            foreach ($quarter_months as $qm) {
+                $new_evals = [];
+                $r->data_seek(0);
+                while ($row = $r->fetch_assoc()) {
+                    $max_id++;
+                    $new_evals[] = [
+                        'id' => $max_id,
+                        'employee_id' => intval($row['id']),
+                        'employee_name' => $row['name'],
+                        'criteria_scores' => ['quality'=>0,'productivity'=>0,'skills'=>0,'attitude'=>0,'teamwork'=>0],
+                        'final_score' => 0,
+                        'rating' => 'unrated',
+                        'days_off' => 0,
+                        'eval_month' => $qm,
+                        'eval_year' => $current_year,
+                        'strengths' => '',
+                        'weaknesses' => '',
+                        'recommendations' => '',
+                        'manager_comments' => '',
+                        'evaluator_name' => '',
+                        'evaluator_id' => 0,
+                        'status' => 'pending',
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'completed_at' => ''
+                    ];
+                }
+                $all_evaluations = array_merge($all_evaluations, $new_evals);
+            }
+
+            file_put_contents($evaluation_file, json_encode($all_evaluations, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        }
+        $conn_reset->close();
+    }
+}
+
+// Gán số ngày nghỉ và tính lương thực nhận cho mỗi nhân viên
+$working_days_per_month = 26;
+foreach ($salary_data as &$emp) {
+    $emp['days_off'] = 0;
+    $emp['eval_month'] = $current_month;
+    $emp['eval_year'] = $current_year;
+
+    $latest_eval = null;
+    foreach ($all_evaluations as $eval) {
+        $evalName = $eval['employee_name'] ?? '';
+        $evalMonth = intval($eval['eval_month'] ?? 0);
+        $evalYear = intval($eval['eval_year'] ?? 0);
+
+        if ($evalName === $emp['name'] || similar_text($evalName, $emp['name']) > 0.7 * max(strlen($evalName), strlen($emp['name']))) {
+            if ($evalMonth > 0 && $evalYear > 0) {
+                if ($evalMonth == $current_month && $evalYear == $current_year) {
+                    if ($latest_eval === null || strtotime($eval['created_at']) > strtotime($latest_eval['created_at'])) {
+                        $latest_eval = $eval;
+                    }
+                }
+            } else {
+                if ($latest_eval === null) {
+                    $latest_eval = $eval;
+                }
+            }
+        }
+    }
+
+    if ($latest_eval && isset($latest_eval['days_off'])) {
+        $emp['days_off'] = intval($latest_eval['days_off']);
+        $emp['eval_month'] = intval($latest_eval['eval_month'] ?? $current_month);
+        $emp['eval_year'] = intval($latest_eval['eval_year'] ?? $current_year);
+    }
+
+    $coefficient = floatval($emp['salary_coefficient'] ?? 1.0);
+    $baseSalaryReal = $emp['salary'] * $coefficient;
+    $daysOffDeduction = round(($baseSalaryReal / $working_days_per_month) * $emp['days_off']);
+    $emp['base_salary_real'] = round($baseSalaryReal);
+    $emp['days_off_deduction'] = $daysOffDeduction;
+    $emp['actual_salary'] = round($baseSalaryReal - $daysOffDeduction);
+}
+unset($emp);
 
 // Xử lý tính lương mới
 $salaryResult = null;
@@ -250,34 +506,20 @@ include 'header-menu.php';
 }
 
 .salary-table th:nth-child(1) {
-    width: 60px;
+    width: 50px;
     text-align: center;
 }
 
-.salary-table th:nth-child(5) {
-    width: 150px;
+.salary-table th:nth-child(5),
+.salary-table th:nth-child(7),
+.salary-table th:nth-child(9),
+.salary-table th:nth-child(10) {
     text-align: right;
 }
 
-.salary-table th:nth-child(6) {
-    width: 80px;
-    text-align: center;
-}
-
-.salary-table th:nth-child(7) {
-    width: 150px;
-    text-align: right;
-}
-
+.salary-table th:nth-child(6),
 .salary-table th:nth-child(8) {
-    width: 150px;
     text-align: center;
-}
-
-.salary-table td {
-    padding: 12px;
-    border-bottom: 1px solid #e5e7eb;
-    vertical-align: middle;
 }
 
 .salary-table td:nth-child(1) {
@@ -285,16 +527,22 @@ include 'header-menu.php';
     font-weight: 600;
 }
 
-.salary-table td:nth-child(5) {
+.salary-table td:nth-child(5),
+.salary-table td:nth-child(7),
+.salary-table td:nth-child(9),
+.salary-table td:nth-child(10) {
     text-align: right;
 }
 
-.salary-table td:nth-child(6) {
+.salary-table td:nth-child(6),
+.salary-table td:nth-child(8) {
     text-align: center;
 }
 
-.salary-table td:nth-child(7) {
-    text-align: right;
+.salary-table td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: middle;
 }
 
 .salary-table tbody tr:hover {
@@ -368,7 +616,7 @@ include 'header-menu.php';
         </h2>
         
         <form id="formSuaLuong" style="display: flex; flex-direction: column; gap: 15px;">
-            <input type="hidden" id="employeeIndex" name="employee_index">
+            <input type="hidden" id="employeeId" name="employee_id">
             
             <div>
                 <label style="display: block; margin-bottom: 5px; font-weight: 600;">Họ và tên:</label>
@@ -381,8 +629,9 @@ include 'header-menu.php';
             </div>
             
             <div>
-                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Số chấm:</label>
-                <input type="number" id="newAttendanceScore" name="new_attendance_score" required min="0" max="100" step="1" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" placeholder="Nhập số chấm (0-100)...">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Hệ số lương:</label>
+                <input type="number" id="newCoefficient" name="new_coefficient" required min="0" max="10" step="0.01" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" placeholder="1.0">
+                <small style="color: #666;">Lương thực nhận = (Cơ bản × Hệ số) - [(Cơ bản × Hệ số) / 26 × Ngày nghỉ]</small>
             </div>
             
             <div style="display: flex; gap: 10px; margin-top: 10px;">
@@ -398,11 +647,11 @@ include 'header-menu.php';
 </div>
 
 <script>
-function suaLuong(index, name, currentBaseSalary, currentScore) {
-    document.getElementById('employeeIndex').value = index;
+function suaLuong(id, name, currentBaseSalary, currentCoefficient) {
+    document.getElementById('employeeId').value = id;
     document.getElementById('employeeName').value = name;
     document.getElementById('newBaseSalary').value = currentBaseSalary;
-    document.getElementById('newAttendanceScore').value = currentScore;
+    document.getElementById('newCoefficient').value = currentCoefficient;
     document.getElementById('modalSuaLuong').style.display = 'block';
 }
 
@@ -413,17 +662,16 @@ function dongModal() {
 document.getElementById('formSuaLuong').addEventListener('submit', function(e) {
     e.preventDefault();
     
-    const index = document.getElementById('employeeIndex').value;
+    const employeeId = document.getElementById('employeeId').value;
     const newBaseSalary = document.getElementById('newBaseSalary').value;
-    const newAttendanceScore = document.getElementById('newAttendanceScore').value;
+    const newCoefficient = document.getElementById('newCoefficient').value;
     const name = document.getElementById('employeeName').value;
     
-    // Gửi request cập nhật lương
     const formData = new FormData();
     formData.append('action', 'update_salary');
-    formData.append('employee_index', index);
+    formData.append('employee_id', employeeId);
     formData.append('new_base_salary', newBaseSalary);
-    formData.append('new_attendance_score', newAttendanceScore);
+    formData.append('new_coefficient', newCoefficient);
     
     fetch('api-salary-simple.php', {
         method: 'POST',
@@ -451,19 +699,68 @@ window.onclick = function(event) {
         dongModal();
     }
 }
+
+function xoaNhanVien(id, name) {
+    if (!confirm('Bạn có chắc muốn xóa "' + name + '" không?\nNhân viên sẽ bị ẩn khỏi danh sách lương.')) {
+        return;
+    }
+    const formData = new FormData();
+    formData.append('action', 'delete_salary');
+    formData.append('employee_id', id);
+
+    fetch('api-salary-simple.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            alert('Đã xóa ' + name + ' thành công!');
+            location.reload();
+        } else {
+            alert('Lỗi: ' + data.message);
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Lỗi khi xóa nhân viên');
+    });
+}
 </script>
 
 <div class="salary-stats">
+    <?php if (isset($_GET['reset']) && $_GET['reset'] == 1): ?>
+    <div style="background: #d1fae5; border: 1px solid #a7f3d0; color: #065f46; padding: 16px 20px; border-radius: 8px; margin-bottom: 20px; font-size: 16px;">
+        <i class="fas fa-check-circle"></i> <strong>Đã reset thành công!</strong> Dữ liệu đánh giá tháng <?php echo $current_month; ?>/<?php echo $current_year; ?> đã được khôi phục về mặc định (0 ngày nghỉ).
+    </div>
+    <?php endif; ?>
+
     <div class="page-header">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
             <div>
                 <h1><i class="fas fa-money-bill-wave"></i> Bảng lương cán bộ</h1>
                 <p>Danh sách lương của toàn bộ cán bộ UBND xã Long Hiệp</p>
             </div>
-            <div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <form method="GET" style="display: flex; gap: 8px; align-items: center;">
+                    <select name="month" style="padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                        <?php for ($m = 1; $m <= 12; $m++): ?>
+                        <option value="<?php echo $m; ?>" <?php echo $m == $current_month ? 'selected' : ''; ?>>Tháng <?php echo $m; ?></option>
+                        <?php endfor; ?>
+                    </select>
+                    <select name="year" style="padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                        <?php for ($y = date('Y'); $y >= date('Y') - 2; $y--): ?>
+                        <option value="<?php echo $y; ?>" <?php echo $y == $current_year ? 'selected' : ''; ?>><?php echo $y; ?></option>
+                        <?php endfor; ?>
+                    </select>
+                    <button type="submit" class="btn" style="background: #2563eb; padding: 8px 16px;"><i class="fas fa-filter"></i> Lọc</button>
+                </form>
                 <button onclick="moFormTinhLuong()" class="btn" style="background: #10b981; display: inline-flex; align-items: center; gap: 8px;">
                     <i class="fas fa-calculator"></i> Tính lương mới
                 </button>
+                <a href="?month=<?php echo $current_month; ?>&year=<?php echo $current_year; ?>&export=1" class="btn" style="background: #f59e0b; display: inline-flex; align-items: center; gap: 8px; color: white; text-decoration: none;">
+                    <i class="fas fa-file-excel"></i> Xuất Excel
+                </a>
             </div>
         </div>
     </div>
@@ -513,10 +810,18 @@ window.onclick = function(event) {
                             </div>
                             <div>
                                 <label style="display: block; font-weight: 600; margin-bottom: 5px;">Lương cơ bản *</label>
+                                <?php if (authIsAdmin()): ?>
                                 <input type="number" name="basic_salary" step="10000" min="0" required
-                                       value="<?php echo $salaryResult ? $salaryResult['basic_salary'] : '5000000'; ?>"
+                                       value="<?php echo $salaryResult ? $salaryResult['basic_salary'] : '2530000'; ?>"
                                        style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;"
-                                       placeholder="5,000,000">
+                                       placeholder="2,530,000">
+                                <?php else: ?>
+                                <input type="number" name="basic_salary" step="10000" min="0" required
+                                       value="<?php echo $salaryResult ? $salaryResult['basic_salary'] : '2530000'; ?>"
+                                       style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; background-color: #f5f5f5;"
+                                       placeholder="2,530,000" readonly>
+                                <small style="color: #999;">Chỉ admin mới có quyền sửa lương</small>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -666,6 +971,10 @@ window.onclick = function(event) {
 
     <!-- Bảng lương chi tiết -->
     <div class="chart-section">
+        <h3 style="margin-bottom: 15px; color: #2563eb;">
+            <i class="fas fa-calendar-alt"></i> Bảng lương tháng <?php echo $current_month; ?>/<?php echo $current_year; ?>
+            <small style="color: #666; font-weight: normal;">(Dựa trên dữ liệu đánh giá hiệu suất)</small>
+        </h3>
         <table class="salary-table">
             <thead>
                 <tr>
@@ -673,18 +982,23 @@ window.onclick = function(event) {
                     <th>Họ tên</th>
                     <th>Chức vụ</th>
                     <th>Phòng ban</th>
-                    <th>Lương cơ bản (VNĐ)</th>
-                    <th>Số chấm</th>
-                    <th>Tổng lương (VNĐ)</th>
+                    <th>Lương cơ bản</th>
+                    <th>Hệ số</th>
+                    <th>Lương cơ bản × Hệ số</th>
+                    <th>Ngày nghỉ</th>
+                    <th>Trừ ngày nghỉ</th>
+                    <th>Lương thực nhận</th>
                     <th style="width: 150px;">Thao tác</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($salary_data as $index => $emp): 
                     $basicSalary = $emp['salary'] ?? $emp['base_salary'] ?? 0;
-                    $attendanceScore = $emp['attendance_score'] ?? 0;
-                    // Công thức: Tổng lương = Lương cơ bản × Số chấm
-                    $totalSalary = $basicSalary * $attendanceScore;
+                    $coefficient = $emp['salary_coefficient'] ?? 1.0;
+                    $baseSalaryReal = $emp['base_salary_real'] ?? $basicSalary;
+                    $daysOff = $emp['days_off'] ?? 0;
+                    $daysOffDeduction = $emp['days_off_deduction'] ?? 0;
+                    $actualSalary = $emp['actual_salary'] ?? $basicSalary;
                 ?>
                 <tr>
                     <td><?php echo $index + 1; ?></td>
@@ -693,17 +1007,30 @@ window.onclick = function(event) {
                         <span class="position-badge"><?php echo $emp['position']; ?></span>
                     </td>
                     <td><?php echo $emp['department']; ?></td>
-                    <td class="salary-amount"><?php echo number_format($basicSalary, 0, ',', '.'); ?> VNĐ</td>
-                    <td style="text-align: center; font-weight: 600; color: #2563eb; font-size: 16px;">
-                        <?php echo $attendanceScore; ?>
+                    <td style="text-align: right; font-weight: 600;"><?php echo number_format($basicSalary, 0, ',', '.'); ?>đ</td>
+                    <td style="text-align: center; font-weight: 600; color: #7c3aed;"><?php echo $coefficient; ?></td>
+                    <td style="text-align: right; font-weight: 600; color: #2563eb;"><?php echo number_format($baseSalaryReal, 0, ',', '.'); ?>đ</td>
+                    <td style="text-align: center; font-weight: 600; <?php echo $daysOff > 0 ? 'color: #ef4444;' : 'color: #999;'; ?>">
+                        <?php echo $daysOff; ?> ngày
                     </td>
-                    <td style="text-align: right; font-weight: 700; color: #059669; font-size: 16px;">
-                        <?php echo number_format($totalSalary, 0, ',', '.'); ?> VNĐ
+                    <td style="text-align: right; font-weight: 600; color: #ef4444;">
+                        <?php echo $daysOff > 0 ? '-' . number_format($daysOffDeduction, 0, ',', '.') . 'đ' : '-'; ?>
+                    </td>
+                    <td style="text-align: right; font-weight: 700; color: #059669; font-size: 15px;">
+                        <?php echo number_format($actualSalary, 0, ',', '.'); ?>đ
                     </td>
                     <td>
-                        <button class="btn-sm btn-warning" onclick="suaLuong(<?php echo $index; ?>, '<?php echo htmlspecialchars($emp['name']); ?>', <?php echo $basicSalary; ?>, <?php echo $attendanceScore; ?>)" title="Sửa lương">
+                        <?php if (authIsAdmin()): ?>
+                        <button class="btn-sm btn-warning" onclick="suaLuong(<?php echo $emp['id']; ?>, '<?php echo htmlspecialchars($emp['name']); ?>', <?php echo $basicSalary; ?>, <?php echo $coefficient; ?>)" title="Sửa lương">
                             <i class="fas fa-edit"></i> Sửa
                         </button>
+                        <button class="btn-sm" style="background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; padding: 5px 10px; margin-top: 4px;" onclick="xoaNhanVien(<?php echo $emp['id']; ?>, '<?php echo htmlspecialchars($emp['name']); ?>')" title="Xóa nhân viên">
+                            <i class="fas fa-trash"></i> Xóa
+                        </button>
+                        <?php endif; ?>
+                        <a href="?month=<?php echo $current_month; ?>&year=<?php echo $current_year; ?>&export=1&emp_id=<?php echo $emp['id']; ?>" class="btn-sm" style="background: #f59e0b; color: white; text-decoration: none; margin-top: 4px; display: inline-block;" title="Xuất lương cá nhân">
+                            <i class="fas fa-file-excel"></i> Xuất
+                        </a>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -720,3 +1047,15 @@ window.onclick = function(event) {
 </div>
 
 <?php include 'footer.php'; ?>
+<script>
+function toggleSalaryEdit() {
+    var input = document.getElementById('salaryInput');
+    if (input.readOnly) {
+        input.readOnly = false;
+        input.style.backgroundColor = '#fff';
+    } else {
+        input.readOnly = true;
+        input.style.backgroundColor = '#f5f5f5';
+    }
+}
+</script>

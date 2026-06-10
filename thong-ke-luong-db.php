@@ -27,7 +27,7 @@ if ($conn) {
                 ds.name,
                 ds.position,
                 d.name as department,
-                COALESCE(ds.basic_salary, 5000000) as salary,
+                COALESCE(ds.basic_salary, 2530000) as salary,
                 COALESCE(ds.salary_coefficient, 0) as attendance_score,
                 ds.status
               FROM department_staff ds

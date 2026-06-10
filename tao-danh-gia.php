@@ -285,13 +285,37 @@ include 'header-menu.php';
     <div class="info-box">
         <p><strong>Nhân viên:</strong> <?php echo htmlspecialchars($employee_name); ?></p>
         <p><strong>Người đánh giá:</strong> <?php echo htmlspecialchars(authDisplayName()); ?></p>
-        <p><strong>Ngày đánh giá:</strong> <?php echo date('d/m/Y'); ?></p>
     </div>
 
     <form id="evaluationForm" method="POST" action="xu-ly-danh-gia.php">
         <input type="hidden" name="employee_id" value="<?php echo $employee_id; ?>">
         <input type="hidden" name="employee_name" value="<?php echo htmlspecialchars($employee_name); ?>">
         <input type="hidden" name="action" value="create">
+
+        <!-- Chọn tháng đánh giá -->
+        <div class="form-card">
+            <div class="form-section">
+                <h3><i class="fas fa-calendar-alt"></i> Tháng đánh giá</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label for="eval_month">Tháng</label>
+                        <select name="eval_month" id="eval_month" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;">
+                            <?php for ($m = 1; $m <= 12; $m++): ?>
+                            <option value="<?php echo $m; ?>" <?php echo $m == date('n') ? 'selected' : ''; ?>>Tháng <?php echo $m; ?></option>
+                            <?php endfor; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="eval_year">Năm</label>
+                        <select name="eval_year" id="eval_year" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;">
+                            <?php for ($y = date('Y'); $y >= date('Y') - 2; $y--): ?>
+                            <option value="<?php echo $y; ?>" <?php echo $y == date('Y') ? 'selected' : ''; ?>><?php echo $y; ?></option>
+                            <?php endfor; ?>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Tiêu chí đánh giá -->
         <div class="form-card">
@@ -398,6 +422,19 @@ include 'header-menu.php';
                             <button type="button" class="rating-btn needs-improvement" onclick="setScore(5, 2)">Cần cải thiện (2)</button>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Số ngày nghỉ trong tháng -->
+        <div class="form-card">
+            <div class="form-section">
+                <h3><i class="fas fa-calendar-minus"></i> Số ngày nghỉ trong tháng</h3>
+                <div class="form-group">
+                    <label for="days_off">Tổng số ngày nghỉ (có phép + không phép)</label>
+                    <input type="number" name="days_off" id="days_off" min="0" max="31" value="0"
+                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;">
+                    <small style="color: #666;">Nhập tổng số ngày nghỉ trong tháng đánh giá (0 nếu không nghỉ)</small>
                 </div>
             </div>
         </div>

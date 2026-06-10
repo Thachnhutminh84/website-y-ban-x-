@@ -26,6 +26,11 @@ if ($action === 'create') {
     $final_score = floatval($_POST['final_score'] ?? 0);
     $rating = $_POST['rating'] ?? '';
     
+    // Số ngày nghỉ trong tháng
+    $days_off = intval($_POST['days_off'] ?? 0);
+    $eval_month = intval($_POST['eval_month'] ?? date('n'));
+    $eval_year = intval($_POST['eval_year'] ?? date('Y'));
+    
     // Nhận xét
     $strengths = $_POST['strengths'] ?? '';
     $weaknesses = $_POST['weaknesses'] ?? '';
@@ -76,6 +81,9 @@ if ($action === 'create') {
         ],
         'final_score' => $final_score,
         'rating' => $rating,
+        'days_off' => $days_off,
+        'eval_month' => $eval_month,
+        'eval_year' => $eval_year,
         'strengths' => $strengths,
         'weaknesses' => $weaknesses,
         'recommendations' => $recommendations,

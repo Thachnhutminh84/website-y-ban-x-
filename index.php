@@ -1173,7 +1173,7 @@ include 'header-menu.php';
                 <i class="fas fa-map-marker-alt"></i>
             </div>
             <h4>Địa chỉ</h4>
-            <p>UBND xã Long Hiệp,<br>Huyện Long Hồ, tỉnh Vĩnh Long</p>
+            <p>UBND xã Long Hiệp,<br>tỉnh Vĩnh Long</p>
         </div>
         <div class="contact-card">
             <div class="contact-icon" style="background: #dbeafe; color: #2563eb;">

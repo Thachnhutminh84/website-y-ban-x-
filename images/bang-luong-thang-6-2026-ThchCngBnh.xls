@@ -1,0 +1,31 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+              xmlns:x="urn:schemas-microsoft-com:office:excel"
+              xmlns="http://www.w3.org/TR/REC-html40">
+              <head>
+              <meta charset="utf-8">
+              <!--[if gte mso 9]><xml>
+              <x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>
+              <x:Name>Bảng lương</x:Name>
+              <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>
+              </x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml>
+              <![endif]-->
+              <style>
+                  .title { font-size: 18px; font-weight: bold; color: #1d4ed8; }
+                  .subtitle { font-size: 13px; color: #555; }
+                  .header-row th {
+                      background: #2563eb; color: white; font-weight: bold;
+                      border: 1px solid #1d4ed8; padding: 8px 10px; text-align: center;
+                      font-size: 12px;
+                  }
+                  .data-row td {
+                      border: 1px solid #d1d5db; padding: 7px 10px; font-size: 12px;
+                  }
+                  .data-row:nth-child(even) { background: #f0f7ff; }
+                  .data-row:hover { background: #dbeafe; }
+                  .money { text-align: right; mso-number-format:"\#\,\#\#0"; }
+                  .center { text-align: center; }
+                  .total-row td {
+                      background: #fef3c7; font-weight: bold; border: 1px solid #d97706;
+                      padding: 8px 10px; font-size: 13px; color: #92400e;
+                  }
+              </style></head><body><table cellpadding="0" cellspacing="0" style="border-collapse:collapse; min-width: 900px;"><tr><td colspan="10" class="title" style="padding: 15px 10px 5px;">BẢNG LƯƠNG CÁN BỘ THÁNG 6/2026</td></tr><tr><td colspan="10" class="subtitle" style="padding: 0 10px 15px;">UBND xã Long Hiệp, huyện Long Hồ, tỉnh Vĩnh Long</td></tr><tr class="header-row"><th>STT</th><th>Họ tên</th><th>Chức vụ</th><th>Phòng ban</th><th>Lương cơ bản</th><th>Hệ số</th><th>Lương CS × Hệ số</th><th>Ngày nghỉ</th><th>Trừ ngày nghỉ</th><th>Lương thực nhận</th></tr><tr class="data-row"><td class="center">1</td><td><b>Thạch Công Bình</b></td><td>Chuyên viên ban kiểm tra Đảng Ủy</td><td>Ủy viên Ban Thường vụ Đảng ủy</td><td class="money">2.530.000</td><td class="center">1.00</td><td class="money">2.530.000</td><td class="center">0 ngày</td><td class="money" style="color:#ef4444;">0</td><td class="money" style="color:#059669; font-weight:bold;">2.530.000</td></tr><tr class="total-row"><td colspan="9" style="text-align:right;">TỔNG CỘNG</td><td class="money" style="color:#059669; font-size:14px;">2.530.000</td></tr></table></body></html>

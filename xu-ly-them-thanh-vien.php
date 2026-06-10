@@ -22,7 +22,7 @@ $name = trim($_POST['name']);
 $position = trim($_POST['position']);
 $phone = trim($_POST['phone']);
 $email = trim($_POST['email'] ?? '');
-$basic_salary = (float)($_POST['basic_salary'] ?? 5000000);
+$basic_salary = (float)($_POST['basic_salary'] ?? 2530000);
 $salary_coefficient = (float)($_POST['salary_coefficient'] ?? 1.0);
 $display_order = (int)($_POST['display_order'] ?? 0);
 $status = $_POST['status'] ?? 'active';
@@ -74,7 +74,10 @@ if ($display_order == 0) {
     if ($hasDeptCodeCol) {
         $result = $conn->query("SELECT COALESCE(MAX(display_order), 0) + 1 as next_order FROM department_staff WHERE department_code = '" . $conn->real_escape_string($department_code) . "'");
     } else {
-        $result = $conn->query("SELECT COALESCE(MAX(display_order), 0) + 1 as next_order FROM department_staff WHERE department_id = $department_id");
+        $stmt = $conn->prepare("SELECT COALESCE(MAX(display_order), 0) + 1 as next_order FROM department_staff WHERE department_id = ?");
+        $stmt->bind_param("i", $department_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
     }
     $row = $result->fetch_assoc();
     $display_order = $row['next_order'];
