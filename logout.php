@@ -1,5 +1,9 @@
 <?php
 session_start();
+require_once 'auth.php';
+
+// Clear remember token before destroying session
+authClearRememberToken();
 
 // Regenerate session ID trước khi destroy
 session_regenerate_id(true);

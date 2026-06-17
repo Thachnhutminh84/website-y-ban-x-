@@ -47,6 +47,10 @@ unset($_SESSION['login_error']);
                             <label for="password">Mật khẩu</label>
                             <input type="password" id="password" name="password" required placeholder="Nhập mật khẩu">
                         </div>
+                        <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                            <input type="checkbox" id="remember_me" name="remember_me" value="1" style="width: auto; margin: 0;">
+                            <label for="remember_me" style="margin: 0; font-weight: 500; cursor: pointer;">Ghi nhớ đăng nhập</label>
+                        </div>
                         <button type="submit" class="btn-login" style="display: block !important; width: 100% !important; padding: 14px !important; background: var(--primary) !important; color: white !important; border: none !important; border-radius: 8px !important; font-size: 16px !important; font-weight: 600 !important; cursor: pointer !important; margin-top: 10px !important;">Đăng nhập</button>
                         <a href="dang-ky.php" class="forgot-password" style="color: var(--primary) !important; font-weight: 600 !important; display: block !important; text-align: center !important; margin-top: 15px !important; text-decoration: none !important;">Chưa có tài khoản? Đăng ký</a>
                     </form>

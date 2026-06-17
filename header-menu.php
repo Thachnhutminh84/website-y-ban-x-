@@ -7,6 +7,11 @@ if (file_exists('auth.php')) {
     require_once 'auth.php';
 }
 
+// Auto-login from remember token if not logged in
+if (function_exists('authTryRememberLogin') && !authIsLoggedIn()) {
+    authTryRememberLogin();
+}
+
 $isLoggedIn = function_exists('authIsLoggedIn') ? authIsLoggedIn() : false;
 $isApproved = function_exists('authIsApproved') ? authIsApproved() : false;
 $displayName = $isLoggedIn && function_exists('authDisplayName') ? authDisplayName() : '';

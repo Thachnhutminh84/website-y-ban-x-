@@ -83,6 +83,25 @@ session_regenerate_id(true);
 
 authSetUserSession($user);
 authUpdateLastLogin($conn, (int) $user['id']);
+
+// Xử lý "Ghi nhớ đăng nhập"
+if (!empty($_POST['remember_me'])) {
+    $token = bin2hex(random_bytes(32));
+    $expiresAt = date('Y-m-d H:i:s', strtotime('+30 days'));
+    
+    // Lưu token vào database
+    $stmtToken = $conn->prepare('INSERT INTO remember_tokens (user_id, token, expires_at) VALUES (?, ?, ?)');
+    if ($stmtToken) {
+        $userId = (int) $user['id'];
+        $stmtToken->bind_param('iss', $userId, $token, $expiresAt);
+        $stmtToken->execute();
+        $stmtToken->close();
+        
+        // Đặt cookie (30 ngày)
+        setcookie('remember_token', $token, time() + (30 * 24 * 60 * 60), '/', '', false, true);
+    }
+}
+
 $conn->close();
 
 header("Location: tin-tuc.php");
