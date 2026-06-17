@@ -410,12 +410,14 @@
                 <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
             </div>
             <div class="chatbot-msg-content">
-                Xin chào! Tôi là trợ lý ảo của UBND Xã Long Hiệp. Tôi có thể giúp bạn tìm thông tin về:
+                Xin chào! Tôi là trợ lý ảo của UBND Xã Long Hiệp. Bạn cần hỏi gì?
                 <div class="chatbot-quick-replies">
                     <button class="chatbot-quick-btn" onclick="sendQuickReply('Thủ tục hành chính')">Thủ tục hành chính</button>
                     <button class="chatbot-quick-btn" onclick="sendQuickReply('Lịch tiếp dân')">Lịch tiếp dân</button>
+                    <button class="chatbot-quick-btn" onclick="sendQuickReply('Giờ làm việc')">Giờ làm việc</button>
                     <button class="chatbot-quick-btn" onclick="sendQuickReply('Liên hệ')">Liên hệ</button>
-                    <button class="chatbot-quick-btn" onclick="sendQuickReply('Tìm kiếm')">Tìm kiếm</button>
+                    <button class="chatbot-quick-btn" onclick="sendQuickReply('Phòng ban')">Phòng ban</button>
+                    <button class="chatbot-quick-btn" onclick="sendQuickReply('Địa chỉ')">Địa chỉ</button>
                 </div>
             </div>
         </div>
@@ -444,51 +446,7 @@
     const typing = document.getElementById('chatbotTyping');
     const dot = document.getElementById('chatbotDot');
 
-    // FAQ Knowledge Base
-    const faq = [
-        {
-            keywords: ['thủ tục', 'hành chính', 'tthc', 'giấy tờ', 'hồ sơ', 'lệ phí'],
-            response: 'UBND xã đang quản lý 410 thủ tục hành chính. Bạn có thể xem chi tiết tại trang Dịch vụ công.'
-        },
-        {
-            keywords: ['lịch tiếp dân', 'tiếp dân', 'gặp gỡ', 'phản ánh', 'khiếu nại', 'tố cáo'],
-            response: 'Lịch tiếp dân định kỳ: Thứ 2 và Thứ 5 hàng tuần, từ 8:00 - 11:00, 13:30 - 17:00 tại trụ sở UBND xã.'
-        },
-        {
-            keywords: ['liên hệ', 'điện thoại', 'số điện thoại', 'email', 'hotline', 'gọi', 'fax'],
-            response: 'Điện thoại: (0272) 3xxx xxx | Email: ubnd@longhiep.vinhlong.gov.vn'
-        },
-        {
-            keywords: ['đăng ký', 'tài khoản', 'đăng nhập', 'tạo tài khoản', 'người dùng', 'đăng kí'],
-            response: 'Bạn có thể đăng ký tài khoản tại trang Đăng ký để sử dụng dịch vụ trực tuyến.'
-        },
-        {
-            keywords: ['giờ làm việc', 'làm việc', 'thời gian', 'giờ mở cửa', 'mở cửa', 'nghỉ', 'cuối tuần'],
-            response: 'Thứ 2 - Thứ 6: 7:30 - 11:30 | 13:30 - 17:00. Thứ 7: 7:30 - 11:30. Chủ nhật: Nghỉ.'
-        },
-        {
-            keywords: ['địa chỉ', 'ở đâu', 'nơi nào', 'trụ sở', 'vị trí', 'map'],
-            response: 'Trụ sở UBND xã Long Hiệp, tỉnh Vĩnh Long. Bạn có thể xem bản đồ tại trang Liên hệ.'
-        },
-        {
-            keywords: ['dịch vụ', 'công', 'trực tuyến', 'online', 'mạng'],
-            response: 'Hiện nay UBND xã Long Hiệp cung cấp nhiều dịch vụ công trực tuyến. Bạn có thể truy cập trang Dịch vụ công để biết thêm chi tiết.'
-        },
-        {
-            keywords: ['cảm ơn', 'thanks', 'thank', 'cám ơn', 'ok', 'tốt'],
-            response: 'Rất vui được hỗ trợ bạn! Nếu có câu hỏi khác, đừng ngần ngại hỏi nhé.'
-        },
-        {
-            keywords: ['xin chào', 'chào', 'hello', 'hi', 'hey', 'alo'],
-            response: 'Xin chào! Tôi có thể giúp bạn tìm thông tin về thủ tục hành chính, lịch tiếp dân, liên hệ và nhiều thông tin khác.'
-        },
-        {
-            keywords: ['tìm kiếm', 'tra cứu', 'tìm', 'search'],
-            response: 'Bạn có thể sử dụng ô tìm kiếm trên trang chủ hoặc truy cập các trang Dịch vụ công, Hỏi - Đáp để tìm thông tin cần thiết.'
-        }
-    ];
-
-    const defaultResponse = 'Xin lỗi, tôi chưa hiểu câu hỏi. Bạn có thể thử hỏi lại hoặc liên hệ trực tiếp UBND xã.';
+    const defaultSuggestions = ['Thủ tục hành chính', 'Lịch tiếp dân', 'Giờ làm việc', 'Liên hệ'];
 
     function toggleChat() {
         win.classList.toggle('open');
@@ -533,7 +491,10 @@
 
         const content = document.createElement('div');
         content.className = 'chatbot-msg-content';
-        content.textContent = text;
+
+        // Support line breaks in response
+        const textNode = document.createTextNode(text);
+        content.appendChild(textNode);
 
         if (replies && replies.length) {
             const qr = document.createElement('div');
@@ -554,18 +515,6 @@
         scrollToBottom();
     }
 
-    function getResponse(input) {
-        const lower = input.toLowerCase().trim();
-        for (let i = 0; i < faq.length; i++) {
-            for (let j = 0; j < faq[i].keywords.length; j++) {
-                if (lower.includes(faq[i].keywords[j])) {
-                    return faq[i].response;
-                }
-            }
-        }
-        return defaultResponse;
-    }
-
     function showTyping() {
         typing.classList.add('active');
         scrollToBottom();
@@ -573,6 +522,30 @@
 
     function hideTyping() {
         typing.classList.remove('active');
+    }
+
+    function callChatbotAPI(text) {
+        return fetch('chatbot-api.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: text })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.success) {
+                return {
+                    response: data.response,
+                    suggestions: data.suggestions || defaultSuggestions
+                };
+            }
+            throw new Error('API error');
+        })
+        .catch(function() {
+            return {
+                response: 'Xin lỗi, hệ thống đang gặp sự cố. Vui lòng thử lại sau hoặc liên hệ UBND xã: (0270) 3.856.417',
+                suggestions: defaultSuggestions
+            };
+        });
     }
 
     function handleSend() {
@@ -583,23 +556,21 @@
         input.value = '';
 
         showTyping();
-        const delay = 600 + Math.random() * 800;
-        setTimeout(function() {
+
+        callChatbotAPI(text).then(function(result) {
             hideTyping();
-            const response = getResponse(text);
-            addBotMessageWithQuickReplies(response, ['Thủ tục hành chính', 'Lịch tiếp dân', 'Liên hệ', 'Giờ làm việc']);
-        }, delay);
+            addBotMessageWithQuickReplies(result.response, result.suggestions);
+        });
     }
 
     window.sendQuickReply = function(text) {
         addMessage(text, true);
         showTyping();
-        const delay = 500 + Math.random() * 600;
-        setTimeout(function() {
+
+        callChatbotAPI(text).then(function(result) {
             hideTyping();
-            const response = getResponse(text);
-            addBotMessageWithQuickReplies(response, ['Thủ tục hành chính', 'Lịch tiếp dân', 'Liên hệ', 'Giờ làm việc']);
-        }, delay);
+            addBotMessageWithQuickReplies(result.response, result.suggestions);
+        });
     };
 
     toggle.addEventListener('click', toggleChat);
