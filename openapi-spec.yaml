@@ -1,0 +1,1440 @@
+openapi: 3.0.3
+info:
+  title: UBND Xa Long Hiep - REST API
+  description: |
+    API he thong quan ly UBND Xa Long Hiep, Tinh Vinh Long.
+    Bao gom: Tin tuc, Van ban, Phong ban, Nhan su, Lien he, Video, Tim kiem.
+  version: 1.0.0
+  contact:
+    name: UBND Xa Long Hiep
+    email: admin@ubndlonghiep.vn
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local Development
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Auth
+    description: Xac thuc nguoi dung
+  - name: Users
+    description: Quan ly nguoi dung
+  - name: Departments
+    description: Quan ly phong ban
+  - name: Staff
+    description: Quan ly can bo
+  - name: Leaders
+    description: Ban lanh dao
+  - name: News
+    description: Tin tuc / Su kien / Thong bao
+  - name: Categories
+    description: Danh muc tin tuc
+  - name: Documents
+    description: Van ban
+  - name: Videos
+    description: Quan ly video
+  - name: Media
+    description: Quan ly hinh anh / tai lieu
+  - name: Contacts
+    description: Lien he / Phan hoi
+  - name: Chat
+    description: Tin nhan noi bo
+  - name: Procedures
+    description: Thu tuc hanh chinh
+  - name: Forms
+    description: Mau / Tep tin tai ve
+  - name: HR
+    description: Quan ly nhan su
+  - name: Salary
+    description: Luong / Khen thuong
+  - name: Search
+    description: Tim kiem toan bo
+  - name: Dashboard
+    description: Thong ke (admin)
+
+paths:
+  # ========== AUTH ==========
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Dang nhap
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username:
+                  type: string
+                  example: admin
+                password:
+                  type: string
+                  example: "123456"
+      responses:
+        '200':
+          description: Dang nhap thanh cong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Dang ky tai khoan
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password, fullName]
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                fullName:
+                  type: string
+                email:
+                  type: string
+                phone:
+                  type: string
+      responses:
+        '201':
+          description: Dang ky thanh cong
+
+  # ========== USERS ==========
+  /users:
+    get:
+      tags: [Users]
+      summary: Danh sach nguoi dung
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - name: userType
+          in: query
+          schema:
+            type: string
+            enum: [nguoi_dan, can_bo]
+      responses:
+        '200':
+          description: Thanh cong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedUserResponse'
+    post:
+      tags: [Users]
+      summary: Tao nguoi dung
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+      responses:
+        '201':
+          description: Tao thanh cong
+
+  /users/{id}:
+    get:
+      tags: [Users]
+      summary: Chi tiet nguoi dung
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Thanh cong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+    put:
+      tags: [Users]
+      summary: Cap nhat nguoi dung
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: Cap nhat thanh cong
+    delete:
+      tags: [Users]
+      summary: Xoa nguoi dung
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Xoa thanh cong
+
+  /users/pending:
+    get:
+      tags: [Users]
+      summary: Danh sach cho duyet
+      responses:
+        '200':
+          description: Thanh cong
+
+  /users/{id}/approve:
+    put:
+      tags: [Users]
+      summary: Duyet nguoi dung
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Duyet thanh cong
+
+  # ========== DEPARTMENTS ==========
+  /departments:
+    get:
+      tags: [Departments]
+      summary: Danh sach phong ban
+      responses:
+        '200':
+          description: Thanh cong
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DepartmentResponse'
+    post:
+      tags: [Departments]
+      summary: Them phong ban
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepartmentCreate'
+      responses:
+        '201':
+          description: Tao thanh cong
+
+  /departments/{slug}:
+    get:
+      tags: [Departments]
+      summary: Chi tiet phong ban theo slug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Thanh cong
+
+  /departments/{id}/staff:
+    get:
+      tags: [Departments]
+      summary: Nhan vien trong phong ban
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Thanh cong
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StaffResponse'
+
+  # ========== STAFF ==========
+  /staff:
+    get:
+      tags: [Staff]
+      summary: Danh sach can bo
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - name: departmentId
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Thanh cong
+    post:
+      tags: [Staff]
+      summary: Them can bo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffCreate'
+      responses:
+        '201':
+          description: Tao thanh cong
+
+  /staff/{id}:
+    get:
+      tags: [Staff]
+      summary: Chi tiet can bo
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Thanh cong
+    put:
+      tags: [Staff]
+      summary: Cap nhat can bo
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Cap nhat thanh cong
+    delete:
+      tags: [Staff]
+      summary: Xoa can bo
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Xoa thanh cong
+
+  /staff/search:
+    get:
+      tags: [Staff]
+      summary: Tim kiem can bo
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Thanh cong
+
+  # ========== LEADERS ==========
+  /leaders:
+    get:
+      tags: [Leaders]
+      summary: Danh sach lanh dao
+      responses:
+        '200':
+          description: Thanh cong
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LeaderResponse'
+    post:
+      tags: [Leaders]
+      summary: Them lanh dao
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeaderCreate'
+      responses:
+        '201':
+          description: Tao thanh cong
+
+  /leaders/{id}:
+    get:
+      tags: [Leaders]
+      summary: Chi tiet lanh dao
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Thanh cong
+    put:
+      tags: [Leaders]
+      summary: Cap nhat lanh dao
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Cap nhat thanh cong
+    delete:
+      tags: [Leaders]
+      summary: Xoa lanh dao
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Xoa thanh cong
+
+  /leaders/{id}/work-history:
+    get:
+      tags: [Leaders]
+      summary: Qua trinh cong tac
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Thanh cong
+
+  # ========== NEWS ==========
+  /news:
+    get:
+      tags: [News]
+      summary: Danh sach tin tuc
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [tin_tuc, su_kien, thong_bao]
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [draft, published, archived]
+        - name: categoryId
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Thanh cong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedNewsResponse'
+    post:
+      tags: [News]
+      summary: Tao tin tuc
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewsCreate'
+      responses:
+        '201':
+          description: Tao thanh cong
+
+  /news/featured:
+    get:
+      tags: [News]
+      summary: Tin tuc noi bat
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Thanh cong
+
+  /news/search:
+    get:
+      tags: [News]
+      summary: Tim kiem tin tuc
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+      responses:
+        '200':
+          description: Thanh cong
+
+  /news/{slug}:
+    get:
+      tags: [News]
+      summary: Chi tiet tin tuc
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Thanh cong
+
+  /news/{id}:
+    put:
+      tags: [News]
+      summary: Cap nhat tin tuc
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Cap nhat thanh cong
+    delete:
+      tags: [News]
+      summary: Xoa tin tuc
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Xoa thanh cong
+
+  /news/{id}/view:
+    post:
+      tags: [News]
+      summary: Tang luot xem
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Thanh cong
+
+  # ========== CATEGORIES ==========
+  /categories:
+    get:
+      tags: [Categories]
+      summary: Tat ca danh muc
+      responses:
+        '200':
+          description: Thanh cong
+    post:
+      tags: [Categories]
+      summary: Them danh muc
+      responses:
+        '201':
+          description: Tao thanh cong
+
+  # ========== DOCUMENTS ==========
+  /documents:
+    get:
+      tags: [Documents]
+      summary: Danh sach van ban
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - name: typeId
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [draft, published, expired, archived]
+      responses:
+        '200':
+          description: Thanh cong
+    post:
+      tags: [Documents]
+      summary: Tao van ban
+      responses:
+        '201':
+          description: Tao thanh cong
+
+  /documents/search:
+    get:
+      tags: [Documents]
+      summary: Tim kiem van ban
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Thanh cong
+
+  /documents/{id}:
+    get:
+      tags: [Documents]
+      summary: Chi tiet van ban
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Thanh cong
+
+  # ========== DOCUMENT TYPES ==========
+  /document-types:
+    get:
+      tags: [Documents]
+      summary: Tat ca loai van ban
+      responses:
+        '200':
+          description: Thanh cong
+
+  # ========== VIDEOS ==========
+  /videos:
+    get:
+      tags: [Videos]
+      summary: Danh sach video
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - name: albumId
+          in: query
+          schema:
+            type: integer
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [youtube, local, vimeo]
+      responses:
+        '200':
+          description: Thanh cong
+    post:
+      tags: [Videos]
+      summary: Them video
+      responses:
+        '201':
+          description: Tao thanh cong
+
+  /videos/featured:
+    get:
+      tags: [Videos]
+      summary: Video noi bat
+      responses:
+        '200':
+          description: Thanh cong
+
+  /videos/search:
+    get:
+      tags: [Videos]
+      summary: Tim kiem video
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Thanh cong
+
+  /videos/{id}:
+    get:
+      tags: [Videos]
+      summary: Chi tiet video
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Thanh cong
+
+  /videos/{id}/view:
+    post:
+      tags: [Videos]
+      summary: Tang luot xem
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Thanh cong
+
+  # ========== VIDEO ALBUMS ==========
+  /video-albums:
+    get:
+      tags: [Videos]
+      summary: Danh sach album
+      responses:
+        '200':
+          description: Thanh cong
+
+  # ========== MEDIA ==========
+  /media:
+    get:
+      tags: [Media]
+      summary: Danh sach media
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [image, video, document]
+      responses:
+        '200':
+          description: Thanh cong
+
+  /media/upload:
+    post:
+      tags: [Media]
+      summary: Upload media
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                description:
+                  type: string
+      responses:
+        '201':
+          description: Upload thanh cong
+
+  # ========== GALLERIES ==========
+  /galleries:
+    get:
+      tags: [Media]
+      summary: Danh sach gallery
+      responses:
+        '200':
+          description: Thanh cong
+
+  # ========== CONTACTS ==========
+  /contacts:
+    get:
+      tags: [Contacts]
+      summary: Danh sach lien he (admin)
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [new, processing, resolved]
+      responses:
+        '200':
+          description: Thanh cong
+    post:
+      tags: [Contacts]
+      summary: Gui phan hoi (public)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactCreate'
+      responses:
+        '201':
+          description: Gui thanh cong
+
+  /contacts/lookup:
+    get:
+      tags: [Contacts]
+      summary: Tra cuu lien he (public)
+      security: []
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+          example: LH-00123
+        - name: email
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Thanh cong
+
+  /contacts/{id}:
+    get:
+      tags: [Contacts]
+      summary: Chi tiet lien he
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Thanh cong
+
+  /contacts/{id}/status:
+    put:
+      tags: [Contacts]
+      summary: Cap nhat trang thai
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [new, processing, resolved]
+      responses:
+        '200':
+          description: Cap nhat thanh cong
+
+  # ========== CHAT ==========
+  /chat/messages:
+    post:
+      tags: [Chat]
+      summary: Gui tin nhan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [message]
+              properties:
+                receiverId:
+                  type: integer
+                message:
+                  type: string
+      responses:
+        '201':
+          description: Gui thanh cong
+    get:
+      tags: [Chat]
+      summary: Lay tin nhan moi (polling)
+      parameters:
+        - name: lastMessageId
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Thanh cong
+
+  /chat/online:
+    get:
+      tags: [Chat]
+      summary: Danh sach dang online
+      responses:
+        '200':
+          description: Thanh cong
+
+  # ========== PROCEDURES ==========
+  /procedures:
+    get:
+      tags: [Procedures]
+      summary: Danh sach thu tuc
+      responses:
+        '200':
+          description: Thanh cong
+    post:
+      tags: [Procedures]
+      summary: Them thu tuc
+      responses:
+        '201':
+          description: Tao thanh cong
+
+  /procedures/{id}:
+    get:
+      tags: [Procedures]
+      summary: Chi tiet thu tuc
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Thanh cong
+
+  # ========== FORMS ==========
+  /forms:
+    get:
+      tags: [Forms]
+      summary: Danh sach form
+      responses:
+        '200':
+          description: Thanh cong
+    post:
+      tags: [Forms]
+      summary: Them form
+      responses:
+        '201':
+          description: Tao thanh cong
+
+  /forms/{id}/download:
+    post:
+      tags: [Forms]
+      summary: Tai ve form
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Thanh cong
+
+  # ========== HR ==========
+  /hr/employees:
+    get:
+      tags: [HR]
+      summary: Danh sach nhan vien
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+      responses:
+        '200':
+          description: Thanh cong
+    post:
+      tags: [HR]
+      summary: Them nhan vien
+      responses:
+        '201':
+          description: Tao thanh cong
+
+  /hr/employees/{id}:
+    get:
+      tags: [HR]
+      summary: Chi tiet nhan vien
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Thanh cong
+
+  /hr/evaluations:
+    get:
+      tags: [HR]
+      summary: Danh sach danh gia
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+      responses:
+        '200':
+          description: Thanh cong
+    post:
+      tags: [HR]
+      summary: Tao danh gia
+      responses:
+        '201':
+          description: Tao thanh cong
+
+  /hr/leave-requests:
+    get:
+      tags: [HR]
+      summary: Danh sach don nghi phep
+      responses:
+        '200':
+          description: Thanh cong
+    post:
+      tags: [HR]
+      summary: Gui don nghi phep
+      responses:
+        '201':
+          description: Gui thanh cong
+
+  # ========== SALARY ==========
+  /salary/payroll:
+    get:
+      tags: [Salary]
+      summary: Bang luong
+      parameters:
+        - name: month
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: year
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Thanh cong
+
+  /salary/statistics:
+    get:
+      tags: [Salary]
+      summary: Thong ke luong
+      parameters:
+        - name: year
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Thanh cong
+
+  # ========== PHONE DIRECTORY ==========
+  /phone-directory:
+    get:
+      tags: [Staff]
+      summary: Danh ba dien thoai
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - name: q
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Thanh cong
+
+  # ========== SEARCH ==========
+  /search:
+    get:
+      tags: [Search]
+      summary: Tim kiem toan bo
+      security: []
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [all, news, documents, videos, staff, departments]
+            default: all
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Thanh cong
+
+  # ========== DASHBOARD ==========
+  /dashboard/stats:
+    get:
+      tags: [Dashboard]
+      summary: Thong ke tong quan
+      responses:
+        '200':
+          description: Thanh cong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardStats'
+
+  /dashboard/news-stats:
+    get:
+      tags: [Dashboard]
+      summary: Thong ke tin tuc
+      responses:
+        '200':
+          description: Thanh cong
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 0
+    SizeParam:
+      name: size
+      in: query
+      schema:
+        type: integer
+        default: 20
+
+  schemas:
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        refreshToken:
+          type: string
+        user:
+          $ref: '#/components/schemas/UserResponse'
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        fullName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+          enum: [admin, editor, viewer]
+        userType:
+          type: string
+          enum: [nguoi_dan, can_bo]
+        status:
+          type: string
+          enum: [active, inactive]
+        approvalStatus:
+          type: string
+          enum: [pending, approved, rejected]
+        createdAt:
+          type: string
+          format: date-time
+
+    UserCreate:
+      type: object
+      required: [username, password, fullName]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        fullName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+        userType:
+          type: string
+
+    UserUpdate:
+      type: object
+      properties:
+        fullName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+
+    PagedUserResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserResponse'
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        number:
+          type: integer
+
+    DepartmentResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        slug:
+          type: string
+        shortName:
+          type: string
+        description:
+          type: string
+        phoneNumbers:
+          type: string
+        email:
+          type: string
+        staffCount:
+          type: integer
+        staffList:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffResponse'
+
+    DepartmentCreate:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        slug:
+          type: string
+        shortName:
+          type: string
+        description:
+          type: string
+        phoneNumbers:
+          type: string
+        email:
+          type: string
+        sortOrder:
+          type: integer
+
+    StaffResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        fullName:
+          type: string
+        position:
+          type: string
+        phoneNumber:
+          type: string
+        email:
+          type: string
+        isLeader:
+          type: boolean
+        departmentName:
+          type: string
+
+    StaffCreate:
+      type: object
+      required: [fullName, departmentId]
+      properties:
+        fullName:
+          type: string
+        departmentId:
+          type: integer
+        position:
+          type: string
+        phoneNumber:
+          type: string
+        email:
+          type: string
+        isLeader:
+          type: boolean
+        sortOrder:
+          type: integer
+
+    LeaderResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        fullName:
+          type: string
+        position:
+          type: string
+        imageUrl:
+          type: string
+        birthDate:
+          type: string
+          format: date
+        gender:
+          type: string
+        ethnicity:
+          type: string
+        partyMemberDate:
+          type: string
+          format: date
+        education:
+          type: string
+        responsibilities:
+          type: string
+        workHistory:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkHistoryResponse'
+
+    LeaderCreate:
+      type: object
+      required: [fullName, position]
+      properties:
+        fullName:
+          type: string
+        position:
+          type: string
+        imageUrl:
+          type: string
+        birthDate:
+          type: string
+          format: date
+        gender:
+          type: string
+        ethnicity:
+          type: string
+        partyMemberDate:
+          type: string
+          format: date
+        education:
+          type: string
+        responsibilities:
+          type: string
+
+    WorkHistoryResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        period:
+          type: string
+        position:
+          type: string
+        organization:
+          type: string
+
+    NewsResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        slug:
+          type: string
+        summary:
+          type: string
+        content:
+          type: string
+        thumbnail:
+          type: string
+        type:
+          type: string
+        status:
+          type: string
+        viewCount:
+          type: integer
+        isFeatured:
+          type: boolean
+        author:
+          type: object
+          properties:
+            id:
+              type: integer
+            fullName:
+              type: string
+        category:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            slug:
+              type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    NewsCreate:
+      type: object
+      required: [title, content]
+      properties:
+        title:
+          type: string
+        summary:
+          type: string
+        content:
+          type: string
+        thumbnail:
+          type: string
+        type:
+          type: string
+          enum: [tin_tuc, su_kien, thong_bao]
+        categoryId:
+          type: integer
+        status:
+          type: string
+          enum: [draft, published]
+
+    PagedNewsResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/NewsResponse'
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        number:
+          type: integer
+
+    ContactCreate:
+      type: object
+      required: [fullName, email, subject, message]
+      properties:
+        fullName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        subject:
+          type: string
+        message:
+          type: string
+
+    ContactResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        ticketCode:
+          type: string
+        fullName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        subject:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+          enum: [new, processing, resolved]
+        adminNote:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    DashboardStats:
+      type: object
+      properties:
+        totalNews:
+          type: integer
+        publishedNews:
+          type: integer
+        totalStaff:
+          type: integer
+        totalDepartments:
+          type: integer
+        totalContacts:
+          type: integer
+        pendingContacts:
+          type: integer
+        totalViews:
+          type: integer
+        totalDocuments:
+          type: integer
+        totalVideos:
+          type: integer
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        error:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time

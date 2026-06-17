@@ -23,7 +23,7 @@ if (isset($_GET['export']) && $_GET['export'] === '1') {
     $conn_exp = getDBConnection();
     $emp_id_filter = intval($_GET['emp_id'] ?? 0);
     if ($conn_exp) {
-        $q = "SELECT ds.id, ds.name, ds.position, d.name as department,
+        $q = "SELECT ds.id, ds.name, ds.position, ds.phone, ds.phone_number, ds.email, d.name as department,
                      COALESCE(ds.basic_salary, 2530000) as salary,
                      COALESCE(ds.salary_coefficient, 1.0) as coeff,
                      ds.status
@@ -75,6 +75,13 @@ if (isset($_GET['export']) && $_GET['export'] === '1') {
         $emp_name_str = '-' . preg_replace('/[^a-zA-Z0-9]/u', '', $export_data[0]['name']);
     }
 
+    // Them phone/email vao export data
+    foreach ($export_data as &$ex) {
+        $ex['phone'] = $ex['phone'] ?? $ex['phone_number'] ?? '';
+        $ex['email'] = $ex['email'] ?? '';
+    }
+    unset($ex);
+
     header('Content-Type: application/vnd.ms-excel; charset=utf-8');
     header('Content-Disposition: attachment; filename="bang-luong-thang-' . $export_month . '-' . $export_year . $emp_name_str . '.xls"');
 
@@ -116,7 +123,7 @@ if (isset($_GET['export']) && $_GET['export'] === '1') {
     
     echo '<tr class="header-row">';
     echo '<th>STT</th><th>Họ tên</th><th>Chức vụ</th><th>Phòng ban</th>';
-    echo '<th>Lương cơ bản</th><th>Hệ số</th><th>Lương CS × Hệ số</th>';
+    echo '<th>Số điện thoại</th><th>Email</th><th>Lương cơ bản</th><th>Hệ số</th><th>Lương CS × Hệ số</th>';
     echo '<th>Ngày nghỉ</th><th>Trừ ngày nghỉ</th><th>Lương thực nhận</th>';
     echo '</tr>';
 
@@ -131,6 +138,8 @@ if (isset($_GET['export']) && $_GET['export'] === '1') {
         echo '<td><b>' . htmlspecialchars($ex['name']) . '</b></td>';
         echo '<td>' . htmlspecialchars($ex['position']) . '</td>';
         echo '<td>' . htmlspecialchars($ex['department']) . '</td>';
+        echo '<td>' . htmlspecialchars($ex['phone'] ?? '') . '</td>';
+        echo '<td>' . htmlspecialchars($ex['email'] ?? '') . '</td>';
         echo '<td class="money">' . number_format($ex['salary'], 0, ',', '.') . '</td>';
         echo '<td class="center">' . $ex['coeff'] . '</td>';
         echo '<td class="money">' . number_format($ex['base_real'], 0, ',', '.') . '</td>';
@@ -141,7 +150,7 @@ if (isset($_GET['export']) && $_GET['export'] === '1') {
     }
 
     echo '<tr class="total-row">';
-    echo '<td colspan="9" style="text-align:right;">TỔNG CỘNG</td>';
+    echo '<td colspan="11" style="text-align:right;">TỔNG CỘNG</td>';
     echo '<td class="money" style="color:#059669; font-size:14px;">' . number_format($totalActual, 0, ',', '.') . '</td>';
     echo '</tr>';
 
@@ -162,7 +171,11 @@ if ($conn_salary) {
                 ds.id,
                 ds.name,
                 ds.position,
+                ds.phone,
+                ds.phone_number,
+                ds.email,
                 d.name as department,
+                d.short_name as dept_short_name,
                 COALESCE(ds.basic_salary, 2530000) as salary,
                 COALESCE(ds.salary_coefficient, 1.0) as attendance_score,
                 ds.status
@@ -175,11 +188,15 @@ if ($conn_salary) {
     
     if ($result) {
         while ($row = $result->fetch_assoc()) {
+            $phone = $row['phone'] ?? $row['phone_number'] ?? '';
             $salary_data[] = [
                 'id' => $row['id'],
                 'name' => $row['name'],
                 'position' => $row['position'],
                 'department' => $row['department'] ?? 'Chưa phân công',
+                'dept_short' => $row['dept_short_name'] ?? '',
+                'phone' => $phone,
+                'email' => $row['email'] ?? '',
                 'salary' => $row['salary'],
                 'base_salary' => $row['salary'],
                 'salary_coefficient' => $row['attendance_score'],
@@ -187,8 +204,26 @@ if ($conn_salary) {
             ];
         }
     }
-    
-    $conn_salary->close();
+}
+
+// Lay thong ke so luong can bo theo phong ban (giong danh ba)
+$dept_stats = [];
+$conn_dept = getDBConnection();
+if ($conn_dept) {
+    $deptQuery = "SELECT d.name as dept_name, d.short_name, COUNT(ds.id) as member_count,
+                  SUM(COALESCE(ds.basic_salary, 2530000)) as total_salary
+                  FROM departments d
+                  LEFT JOIN department_staff ds ON d.id = ds.department_id AND ds.status = 'active'
+                  WHERE d.status = 'active'
+                  GROUP BY d.id, d.name, d.short_name
+                  HAVING COUNT(ds.id) > 0
+                  ORDER BY member_count DESC";
+    $deptResult = $conn_dept->query($deptQuery);
+    if ($deptResult) {
+        while ($row = $deptResult->fetch_assoc()) {
+            $dept_stats[] = $row;
+        }
+    }
 }
 
 // Sắp xếp danh sách theo lương cơ bản
@@ -510,15 +545,15 @@ include 'header-menu.php';
     text-align: center;
 }
 
-.salary-table th:nth-child(5),
 .salary-table th:nth-child(7),
 .salary-table th:nth-child(9),
-.salary-table th:nth-child(10) {
+.salary-table th:nth-child(11),
+.salary-table th:nth-child(12) {
     text-align: right;
 }
 
-.salary-table th:nth-child(6),
-.salary-table th:nth-child(8) {
+.salary-table th:nth-child(8),
+.salary-table th:nth-child(10) {
     text-align: center;
 }
 
@@ -527,15 +562,15 @@ include 'header-menu.php';
     font-weight: 600;
 }
 
-.salary-table td:nth-child(5),
 .salary-table td:nth-child(7),
 .salary-table td:nth-child(9),
-.salary-table td:nth-child(10) {
+.salary-table td:nth-child(11),
+.salary-table td:nth-child(12) {
     text-align: right;
 }
 
-.salary-table td:nth-child(6),
-.salary-table td:nth-child(8) {
+.salary-table td:nth-child(8),
+.salary-table td:nth-child(10) {
     text-align: center;
 }
 
@@ -646,6 +681,78 @@ include 'header-menu.php';
     </div>
 </div>
 
+<!-- Modal thêm cán bộ -->
+<div id="modalThemCanBo" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; overflow-y: auto;">
+    <div style="max-width: 550px; margin: 80px auto; background: white; border-radius: 10px; padding: 30px; position: relative;">
+        <button onclick="dongModalThemCanBo()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">&times;</button>
+
+        <h2 style="margin: 0 0 20px 0; color: #8b5cf6;">
+            <i class="fas fa-user-plus"></i> Thêm cán bộ mới
+        </h2>
+
+        <form id="formThemCanBo" style="display: flex; flex-direction: column; gap: 15px;">
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Họ và tên <span style="color: red;">*</span></label>
+                <input type="text" name="name" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" placeholder="Nguyễn Văn A">
+            </div>
+
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Chức vụ <span style="color: red;">*</span></label>
+                <input type="text" name="position" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" placeholder="Chuyên viên">
+            </div>
+
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Phòng ban <span style="color: red;">*</span></label>
+                <select name="department_id" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    <option value="">-- Chọn phòng ban --</option>
+                    <?php
+                    $conn_dept_list = getDBConnection();
+                    if ($conn_dept_list) {
+                        $dept_list = $conn_dept_list->query("SELECT id, name FROM departments WHERE status = 'active' ORDER BY display_order ASC, name ASC");
+                        if ($dept_list) {
+                            while ($dl = $dept_list->fetch_assoc()) {
+                                echo '<option value="' . $dl['id'] . '">' . htmlspecialchars($dl['name']) . '</option>';
+                            }
+                        }
+                    }
+                    ?>
+                </select>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Số điện thoại</label>
+                    <input type="text" name="phone" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" placeholder="0912.345.678">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Email</label>
+                    <input type="email" name="email" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" placeholder="email@example.com">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Lương cơ bản (VNĐ)</label>
+                    <input type="number" name="basic_salary" min="0" step="10000" value="2530000" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Hệ số lương</label>
+                    <input type="number" name="salary_coefficient" min="0" max="10" step="0.01" value="1.0" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button type="submit" style="flex: 1; padding: 12px; background: #8b5cf6; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600;">
+                    <i class="fas fa-plus"></i> Thêm cán bộ
+                </button>
+                <button type="button" onclick="dongModalThemCanBo()" style="flex: 1; padding: 12px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600;">
+                    <i class="fas fa-times"></i> Hủy
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
 function suaLuong(id, name, currentBaseSalary, currentCoefficient) {
     document.getElementById('employeeId').value = id;
@@ -726,6 +833,45 @@ function xoaNhanVien(id, name) {
         alert('Lỗi khi xóa nhân viên');
     });
 }
+
+// === Thêm cán bộ ===
+function openModalThemCanBo() {
+    document.getElementById('modalThemCanBo').style.display = 'block';
+}
+
+function dongModalThemCanBo() {
+    document.getElementById('modalThemCanBo').style.display = 'none';
+}
+
+document.getElementById('formThemCanBo').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    formData.append('action', 'add_staff');
+
+    fetch('api-salary-simple.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            alert('Thêm cán bộ thành công!');
+            dongModalThemCanBo();
+            location.reload();
+        } else {
+            alert('Lỗi: ' + data.message);
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Lỗi khi thêm cán bộ');
+    });
+});
+
+window.addEventListener('click', function(e) {
+    if (e.target.id === 'modalThemCanBo') dongModalThemCanBo();
+});
 </script>
 
 <div class="salary-stats">
@@ -739,7 +885,7 @@ function xoaNhanVien(id, name) {
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
             <div>
                 <h1><i class="fas fa-money-bill-wave"></i> Bảng lương cán bộ</h1>
-                <p>Danh sách lương của toàn bộ cán bộ UBND xã Long Hiệp</p>
+                <p>Danh sách lương <?php echo count($salary_data); ?> cán bộ UBND xã Long Hiệp</p>
             </div>
             <div style="display: flex; gap: 10px; align-items: center;">
                 <form method="GET" style="display: flex; gap: 8px; align-items: center;">
@@ -758,10 +904,40 @@ function xoaNhanVien(id, name) {
                 <button onclick="moFormTinhLuong()" class="btn" style="background: #10b981; display: inline-flex; align-items: center; gap: 8px;">
                     <i class="fas fa-calculator"></i> Tính lương mới
                 </button>
+                <?php if (authIsAdmin()): ?>
+                <button onclick="openModalThemCanBo()" class="btn" style="background: #8b5cf6; display: inline-flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-user-plus"></i> Thêm cán bộ
+                </button>
+                <?php endif; ?>
                 <a href="?month=<?php echo $current_month; ?>&year=<?php echo $current_year; ?>&export=1" class="btn" style="background: #f59e0b; display: inline-flex; align-items: center; gap: 8px; color: white; text-decoration: none;">
                     <i class="fas fa-file-excel"></i> Xuất Excel
                 </a>
             </div>
+        </div>
+    </div>
+
+    <!-- Thong ke so luong can bo theo phong ban -->
+    <div class="chart-section" style="margin-bottom: 30px;">
+        <h3 style="margin: 0 0 20px 0; color: #374151; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-building"></i> Thống kê cán bộ theo phòng ban
+            <small style="color: #666; font-weight: normal; font-size: 14px;">(Tổng: <?php echo count($salary_data); ?> cán bộ)</small>
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
+            <?php foreach ($dept_stats as $ds): ?>
+            <div class="dept-item">
+                <div class="dept-info">
+                    <div class="dept-name"><?php echo htmlspecialchars($ds['dept_name']); ?></div>
+                    <div class="dept-stats">
+                        <i class="fas fa-users" style="margin-right: 4px;"></i>
+                        <?php echo $ds['member_count']; ?> cán bộ
+                    </div>
+                </div>
+                <div class="dept-salary">
+                    <div class="dept-total"><?php echo number_format($ds['total_salary'], 0, ',', '.'); ?>đ</div>
+                    <div class="dept-avg">TB: <?php echo number_format($ds['total_salary'] / $ds['member_count'], 0, ',', '.'); ?>đ/người</div>
+                </div>
+            </div>
+            <?php endforeach; ?>
         </div>
     </div>
 
@@ -973,25 +1149,40 @@ function xoaNhanVien(id, name) {
     <div class="chart-section">
         <h3 style="margin-bottom: 15px; color: #2563eb;">
             <i class="fas fa-calendar-alt"></i> Bảng lương tháng <?php echo $current_month; ?>/<?php echo $current_year; ?>
-            <small style="color: #666; font-weight: normal;">(Dựa trên dữ liệu đánh giá hiệu suất)</small>
+            <small style="color: #666; font-weight: normal;">(<?php echo count($salary_data); ?> cán bộ - Dựa trên dữ liệu đánh giá hiệu suất)</small>
         </h3>
-        <table class="salary-table">
+
+        <!-- Ô tìm kiếm -->
+        <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 250px; position: relative;">
+                <i class="fas fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 15px;"></i>
+                <input type="text" id="searchSalary" placeholder="Tìm theo tên, chức vụ, phòng ban, SĐT, email..."
+                       onkeyup="locBangLuong()"
+                       style="width: 100%; padding: 12px 16px 12px 42px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 15px; outline: none; transition: border-color 0.2s; box-sizing: border-box;"
+                       onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#e5e7eb'">
+            </div>
+            <div id="searchResultCount" style="color: #6b7280; font-size: 14px; white-space: nowrap;"></div>
+        </div>
+
+        <table class="salary-table" id="salaryTable">
             <thead>
                 <tr>
                     <th>STT</th>
                     <th>Họ tên</th>
                     <th>Chức vụ</th>
                     <th>Phòng ban</th>
+                    <th>Số điện thoại</th>
+                    <th>Email</th>
                     <th>Lương cơ bản</th>
                     <th>Hệ số</th>
-                    <th>Lương cơ bản × Hệ số</th>
+                    <th>Lương CS × Hệ số</th>
                     <th>Ngày nghỉ</th>
                     <th>Trừ ngày nghỉ</th>
                     <th>Lương thực nhận</th>
-                    <th style="width: 150px;">Thao tác</th>
+                    <th style="width: 100px;">Thao tác</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="salaryBody">
                 <?php foreach ($salary_data as $index => $emp): 
                     $basicSalary = $emp['salary'] ?? $emp['base_salary'] ?? 0;
                     $coefficient = $emp['salary_coefficient'] ?? 1.0;
@@ -1007,6 +1198,24 @@ function xoaNhanVien(id, name) {
                         <span class="position-badge"><?php echo $emp['position']; ?></span>
                     </td>
                     <td><?php echo $emp['department']; ?></td>
+                    <td style="white-space: nowrap;">
+                        <?php if (!empty($emp['phone'])): ?>
+                            <a href="tel:<?php echo preg_replace('/[^0-9+]/', '', $emp['phone']); ?>" style="color: #2563eb; text-decoration: none;">
+                                <i class="fas fa-phone" style="margin-right: 4px; font-size: 11px;"></i><?php echo htmlspecialchars($emp['phone']); ?>
+                            </a>
+                        <?php else: ?>
+                            <span style="color: #999;">-</span>
+                        <?php endif; ?>
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <?php if (!empty($emp['email'])): ?>
+                            <a href="mailto:<?php echo htmlspecialchars($emp['email']); ?>" style="color: #2563eb; text-decoration: none; font-size: 13px;">
+                                <?php echo htmlspecialchars($emp['email']); ?>
+                            </a>
+                        <?php else: ?>
+                            <span style="color: #999;">-</span>
+                        <?php endif; ?>
+                    </td>
                     <td style="text-align: right; font-weight: 600;"><?php echo number_format($basicSalary, 0, ',', '.'); ?>đ</td>
                     <td style="text-align: center; font-weight: 600; color: #7c3aed;"><?php echo $coefficient; ?></td>
                     <td style="text-align: right; font-weight: 600; color: #2563eb;"><?php echo number_format($baseSalaryReal, 0, ',', '.'); ?>đ</td>
@@ -1056,6 +1265,38 @@ function toggleSalaryEdit() {
     } else {
         input.readOnly = true;
         input.style.backgroundColor = '#f5f5f5';
+    }
+}
+
+function locBangLuong() {
+    var keyword = document.getElementById('searchSalary').value.toLowerCase().trim();
+    var table = document.getElementById('salaryTable');
+    var rows = table.querySelectorAll('tbody tr');
+    var visibleCount = 0;
+
+    rows.forEach(function(row) {
+        var cells = row.querySelectorAll('td');
+        var match = false;
+        for (var i = 0; i < cells.length; i++) {
+            var text = cells[i].textContent.toLowerCase();
+            if (text.indexOf(keyword) !== -1) {
+                match = true;
+                break;
+            }
+        }
+        if (keyword === '' || match) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    var countEl = document.getElementById('searchResultCount');
+    if (keyword === '') {
+        countEl.textContent = '';
+    } else {
+        countEl.textContent = 'Tìm thấy ' + visibleCount + ' kết quả';
     }
 }
 </script>

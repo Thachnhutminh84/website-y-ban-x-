@@ -273,7 +273,7 @@ function toggleSound() {
                 <p style="color: #1e40af; font-size: 18px; line-height: 1.9; margin: 0;">
                     Nghị định 150 là <strong>quy định mới của Chính phủ</strong> về cách tổ chức các phòng ban 
                     trong cơ quan nhà nước từ cấp tỉnh đến cấp xã. Nói nôm na: 
-                    <strong>nó sắp xếp lại các phòng ban cho gọn gàng, rõ ràng hơn</strong>, 
+                        <strong>nó sắp xếp lại các phòng ban cho gọn gàng, rõ ràng hơn</strong>, 
                     để cán bộ làm việc hiệu quả và Nhân dân dễ hiểu.
                 </p>
             </div>
@@ -288,7 +288,7 @@ function toggleSound() {
                     <h4 style="color: #991b1b; font-size: 18px; margin-bottom: 8px;">Trước đây</h4>
                     <p style="color: #b91c1c; font-size: 18px; line-height: 1.7; margin: 0;">
                         Các phòng ban nhiều khi chồng chéo, không rõ ai làm gì. 
-                        Có nơi thừa, có nơi thiếu, Nhân dân khó了解.
+                        Có nơi thừa, có nơi thiếu, Nhân dân khó hiểu.
                     </p>
                 </div>
 
@@ -305,18 +305,18 @@ function toggleSound() {
                     </div>
                     <h4 style="color: #065f46; font-size: 18px; margin-bottom: 8px;">Sau khi có NĐ 150</h4>
                     <p style="color: #047857; font-size: 18px; line-height: 1.7; margin: 0;">
-                        Mỗi xã có đúng <strong>3 phòng chuyên môn</strong>, mỗi phòng rõ chức năng. 
+                        Mỗi xã có đúng <strong>4 phòng chuyên môn</strong>, mỗi phòng rõ chức năng. 
                         Nhân dân biết cần gặp ai, gọi ai khi có việc.
                     </p>
                 </div>
             </div>
 
-            <!-- 3 phòng ban cụ thể -->
+            <!-- 4 phòng ban cụ thể -->
             <div style="background: #fafafa; border-radius: 16px; padding: 28px; border: 1px solid #f0f0f0; margin-bottom: 28px;">
                 <h3 style="color: #0f172a; font-size: 20px; margin-bottom: 18px; text-align: center;">
-                    <i class="fas fa-building" style="color: #dc2626;"></i> 3 Phòng ban tại xã Long Hiệp
+                    <i class="fas fa-building" style="color: #dc2626;"></i> 4 Phòng ban tại xã Long Hiệp
                 </h3>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
                     <div style="background: white; border-radius: 14px; padding: 20px; border: 1px solid #f0f0f0; text-align: center;">
                         <div style="display: inline-flex; width: 44px; height: 44px; border-radius: 12px; background: #fee2e2; color: #dc2626; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 10px;">
                             <i class="fas fa-scroll"></i>
@@ -337,6 +337,13 @@ function toggleSound() {
                         </div>
                         <h4 style="color: #0f172a; font-size: 18px; margin-bottom: 6px;">Phòng Văn hóa - Xã hội</h4>
                         <p style="color: #64748b; font-size: 17px; line-height: 1.6; margin: 0;">Giáo dục, y tế, văn hóa, an sinh xã hội</p>
+                    </div>
+                    <div style="background: white; border-radius: 14px; padding: 20px; border: 1px solid #f0f0f0; text-align: center;">
+                        <div style="display: inline-flex; width: 44px; height: 44px; border-radius: 12px; background: #ecfdf5; color: #059669; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 10px;">
+                            <i class="fas fa-concierge-bell"></i>
+                        </div>
+                        <h4 style="color: #0f172a; font-size: 18px; margin-bottom: 6px;">Trung tâm Phục vụ Hành chính công</h4>
+                        <p style="color: #64748b; font-size: 17px; line-height: 1.6; margin: 0;">Tiếp nhận, hướng dẫn, trả kết quả TTHC một cửa</p>
                     </div>
                 </div>
             </div>
@@ -381,9 +388,9 @@ function toggleSound() {
                 <div class="intro-sh-icon" style="background: #d1fae5; color: #059669;">
                     <i class="fas fa-building"></i>
                 </div>
-                <h2>3 Phòng chuyên môn cấp xã<small>Theo Điều 11 — Điều 16, Nghị định 150/2025/NĐ-CP</small></h2>
+                <h2>4 Phòng chuyên môn cấp xã<small>Theo Điều 11 — Điều 16, Nghị định 150/2025/NĐ-CP</small></h2>
             </div>
-            <div class="dept-grid">
+                <div class="dept-grid">
                 <div class="dept-card">
                     <div class="dept-icon" style="background: #fee2e2; color: #dc2626;">
                         <i class="fas fa-scroll"></i>
@@ -424,6 +431,20 @@ function toggleSound() {
                         <li><i class="fas fa-check"></i> Quản lý y tế, dân số, KHHGĐ</li>
                         <li><i class="fas fa-check"></i> Quản lý lao động, việc làm, an sinh xã hội</li>
                         <li><i class="fas fa-check"></i> Quản lý hội, tổ chức phi chính phủ</li>
+                    </ul>
+                </div>
+                <div class="dept-card">
+                    <div class="dept-icon" style="background: #ecfdf5; color: #059669;">
+                        <i class="fas fa-concierge-bell"></i>
+                    </div>
+                    <h4>Trung tâm Phục vụ Hành chính công</h4>
+                    <p>Đầu mối tiếp nhận, số hóa, hướng dẫn và trả kết quả giải quyết TTHC một cửa</p>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Công khai thủ tục hành chính, hỗ trợ dịch vụ công trực tuyến</li>
+                        <li><i class="fas fa-check"></i> Hướng dẫn, tiếp nhận hồ sơ thủ tục hành chính</li>
+                        <li><i class="fas fa-check"></i> Số hóa hồ sơ, phối hợp giải quyết TTHC</li>
+                        <li><i class="fas fa-check"></i> Trả kết quả giải quyết TTHC cho cá nhân, tổ chức</li>
+                        <li><i class="fas fa-check"></i> Giám sát, đôn đốc việc giải quyết TTHC trên địa bàn</li>
                     </ul>
                 </div>
             </div>
@@ -540,8 +561,8 @@ function toggleSound() {
                         <p>Hiện đại hóa "một cửa", đạt chỉ số hài lòng Nhân dân trên 93 điểm. Chuyển đổi số trong điều hành.</p>
                     </div>
                     <div class="timeline-item">
-                        <h4>Tổ chức 3 phòng chuyên môn</h4>
-                        <p>Văn phòng HĐND & UBND, Phòng Kinh tế, Phòng Văn hóa - Xã hội.</p>
+                        <h4>Tổ chức 4 phòng chuyên môn</h4>
+                        <p>Văn phòng HĐND & UBND, Phòng Kinh tế, Phòng Văn hóa - Xã hội, Trung tâm Phục vụ Hành chính công.</p>
                     </div>
                     <div class="timeline-item">
                         <h4>Phục vụ Nhân dân</h4>
