@@ -872,6 +872,20 @@ include 'header-menu.php';
     overflow: hidden;
 }
 
+/* News card hover effect */
+.news-card-home:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15) !important;
+}
+
+.news-card-home:hover img {
+    transform: scale(1.05);
+}
+
+.news-card-home img {
+    transition: transform 0.3s ease;
+}
+
 /* --- Responsive --- */
 @media (max-width: 1024px) {
     .features-grid { grid-template-columns: repeat(2, 1fr); }
@@ -884,20 +898,20 @@ include 'header-menu.php';
 }
 
 @media (max-width: 768px) {
-    .hero-inner { padding: 56px 20px 48px; }
-    .hero-stats { gap: 16px; }
-    .hero-stat { min-width: 120px; padding: 14px 16px; }
-    .hero-stat strong { font-size: 30px; }
-    .features-grid { grid-template-columns: 1fr; }
-    .about-content { padding: 36px 24px; }
-    .cta-section { padding: 48px 24px; }
-    .contact-grid { grid-template-columns: repeat(2, 1fr); }
     .dept-showcase { grid-template-columns: 1fr; }
     .qs-grid { grid-template-columns: 1fr; }
     .stats-grid { grid-template-columns: 1fr 1fr; }
     .news-grid { grid-template-columns: 1fr; }
+    .news-grid-home { grid-template-columns: 1fr !important; }
     .section { padding: 48px 16px; }
     .stats-banner { padding: 36px 24px; }
+}
+
+@media (max-width: 480px) {
+    .contact-grid { grid-template-columns: 1fr; }
+    .cta-buttons { flex-direction: column; align-items: center; }
+    .btn-hero { width: 100%; justify-content: center; }
+    .stats-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 480px) {
@@ -1049,6 +1063,87 @@ include 'header-menu.php';
         </a>
     </div>
 </section>
+
+<!-- ========== LATEST NEWS ========== -->
+<?php
+// Load latest news for homepage
+$latestNews = [];
+try {
+    $newsConn = getDBConnection();
+    $newsStmt = $newsConn->prepare("SELECT n.id, n.title, n.summary, n.image, n.published_at, c.slug as category_slug 
+                                    FROM news n 
+                                    LEFT JOIN categories c ON n.category_id = c.id 
+                                    WHERE n.status = 'published' 
+                                    ORDER BY n.published_at DESC, n.id DESC 
+                                    LIMIT 6");
+    if ($newsStmt) {
+        $newsStmt->execute();
+        $newsResult = $newsStmt->get_result();
+        while ($row = $newsResult->fetch_assoc()) {
+            $latestNews[] = $row;
+        }
+        $newsStmt->close();
+    }
+    $newsConn->close();
+} catch (Throwable $e) {
+    // Ignore errors
+}
+?>
+
+<?php if (!empty($latestNews)): ?>
+<section class="section" style="padding-top: 0;">
+    <div class="section-header">
+        <div class="eyebrow" style="background: #dbeafe; color: #2563eb;"><i class="fas fa-newspaper"></i> Tin tức mới nhất</div>
+        <h2>Tin nổi bật</h2>
+        <p>Cập nhật thông tin mới nhất từ UBND xã Long Hiệp</p>
+    </div>
+    
+    <div class="news-grid-home" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1200px; margin: 0 auto; padding: 0 24px;">
+        <?php foreach ($latestNews as $item): ?>
+        <a href="chi-tiet-tin.php?id=<?php echo $item['id']; ?>" class="news-card-home" style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: all 0.3s ease; text-decoration: none; color: inherit; display: block;">
+            <div style="position: relative; padding-top: 56.25%; overflow: hidden;">
+                <img src="<?php echo htmlspecialchars($item['image'] ?: 'images/news-default.jpg', ENT_QUOTES, 'UTF-8'); ?>" 
+                     alt="<?php echo htmlspecialchars($item['title'], ENT_QUOTES, 'UTF-8'); ?>"
+                     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
+                <?php if ($item['category_slug']): ?>
+                <span style="position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.7); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;">
+                    <?php 
+                    $catNames = [
+                        'xay-dung-dang' => 'Xây dựng Đảng',
+                        'mat-tran' => 'Mặt trận đoàn thể',
+                        'an-ninh' => 'An ninh trật tự',
+                        'su-kien' => 'Sự kiện',
+                        'tuyen-truyen' => 'Tuyên truyền',
+                        'giao-duc' => 'Giáo dục'
+                    ];
+                    echo $catNames[$item['category_slug']] ?? $item['category_slug'];
+                    ?>
+                </span>
+                <?php endif; ?>
+            </div>
+            <div style="padding: 20px;">
+                <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 700; color: #1a202c; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                    <?php echo htmlspecialchars($item['title'], ENT_QUOTES, 'UTF-8'); ?>
+                </h3>
+                <p style="margin: 0 0 12px 0; font-size: 14px; color: #64748b; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                    <?php echo htmlspecialchars($item['summary'] ?: '', ENT_QUOTES, 'UTF-8'); ?>
+                </p>
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #94a3b8;">
+                    <i class="fas fa-clock"></i>
+                    <span><?php echo date('d/m/Y', strtotime($item['published_at'])); ?></span>
+                </div>
+            </div>
+        </a>
+        <?php endforeach; ?>
+    </div>
+    
+    <div style="text-align: center; margin-top: 32px;">
+        <a href="tin-tuc.php" style="display: inline-flex; align-items: center; gap: 8px; background: var(--primary); color: white; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s;">
+            <i class="fas fa-arrow-right"></i> Xem tất cả tin tức
+        </a>
+    </div>
+</section>
+<?php endif; ?>
 
 <!-- ========== ABOUT ========== -->
 <section class="section" style="padding-top: 0;">
