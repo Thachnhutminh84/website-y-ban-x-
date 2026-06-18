@@ -188,7 +188,7 @@ THÔNG TIN QUAN TRỌNG:
 - Địa chỉ: xã Long Hiệp, tỉnh Vĩnh Long
 - ĐT: (0270) 3.856.417
 - Email: ubnd.longhiep@vinhlong.gov.vn
-- Website: https://longhiep.vinhlong.gov.vn
+- Website: https://longhiep.vinhlong.gov.vn (đang bảo trì)
 
 GIỜ LÀM VIỆC: Thứ 2-6: 7:30-11:30, 13:30-17:00. Thứ 7: 7:30-11:30. Chủ nhật: Nghỉ.
 

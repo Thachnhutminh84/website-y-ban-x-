@@ -17,7 +17,7 @@ $chatbotKnowledge = [
     // ==================== THỦ TỤC HÀNH CHÍNH ====================
     [
         'keywords' => ['thủ tục', 'hành chính', 'tthc', 'giấy tờ', 'hồ sơ', 'lệ phí', 'nộp hồ sơ'],
-        'response' => 'UBND xã đang quản lý 410 thủ tục hành chính thuộc nhiều lĩnh vực. Bạn có thể xem chi tiết tại trang Dịch vụ công: https://longhiep.vinhlong.gov.vn/dich-vu-cong'
+        'response' => 'UBND xã đang quản lý 410 thủ tục hành chính thuộc nhiều lĩnh vực. Bạn có thể liên hệ trực tiếp UBND xã để được hướng dẫn chi tiết.'
     ],
     [
         'keywords' => ['ký sinh', 'giấy khai sinh', 'đăng ký khai sinh', 'khai sinh cho con'],
@@ -119,7 +119,7 @@ $chatbotKnowledge = [
     // ==================== DỊCH VỤ CÔNG ====================
     [
         'keywords' => ['dịch vụ', 'công', 'trực tuyến', 'online', 'mạng', 'cổng dịch vụ'],
-        'response' => 'UBND xã Long Hiệp cung cấp nhiều dịch vụ công trực tuyến. Truy cập trang Dịch vụ công để nộp hồ sơ trực tuyến: https://longhiep.vinhlong.gov.vn/dich-vu-cong'
+        'response' => 'UBND xã Long Hiệp cung cấp nhiều dịch vụ công trực tuyến. Bạn có thể liên hệ UBND xã để được hướng dẫn nộp hồ sơ trực tuyến.'
     ],
     [
         'keywords' => ['nộp hồ sơ trực tuyến', 'eportal', 'cổng thông tin'],
@@ -417,7 +417,7 @@ $chatbotKnowledge = [
     // ==================== DỊCH VỤ CÔNG TRỰC TUYẾN ====================
     [
         'keywords' => ['dịch vụ công', 'công trực tuyến', 'nộp hồ sơ online', 'eportal'],
-        'response' => 'Dịch vụ công trực tuyến: Truy cập https://longhiep.vinhlong.gov.vn/dich-vu-cong để nộp hồ sơ trực tuyến.'
+        'response' => 'Dịch vụ công trực tuyến: Liên hệ UBND xã để được hướng dẫn nộp hồ sơ trực tuyến.'
     ],
 
     // ==================== CÁC NGÀY LỄ LỚN ====================
