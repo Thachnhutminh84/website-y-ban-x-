@@ -239,6 +239,240 @@ $chatbotKnowledge = [
         'keywords' => ['thông tin', 'chung', 'tổng quát', 'tổng hợp'],
         'response' => 'UBND xã Long Hiệp hoạt động phục vụ nhân dân trên địa bàn xã. Website: https://longhiep.vinhlong.gov.vn để cập nhật thông tin mới nhất.'
     ],
+
+    // ==================== BẢO HIỂM XÃ HỘI ====================
+    [
+        'keywords' => ['bảo hiểm', 'bhxh', 'bảo hiểm xã hội', 'bảo hiểm y tế', 'bhyt', 'thẻ bảo hiểm'],
+        'response' => 'Bảo hiểm xã hội: Liên hệ Phòng Văn hóa - Xã hội để được hướng dẫn办理 các chế độ BHXH, BHYT. ĐT: 0343.791.397.'
+    ],
+
+    // ==================== NGHỈ PHÉP ====================
+    [
+        'keywords' => ['nghỉ phép', 'phép năm', 'nghỉ nghỉ', 'nghỉ việc'],
+        'response' => 'Chính sách nghỉ phép: Công chức được nghỉ phép năm theo quy định. Liên hệ Phòng VH-XH để biết chi tiết.'
+    ],
+
+    // ==================== LƯƠNG ====================
+    [
+        'keywords' => ['lương', 'tiền lương', 'thưởng', 'phụ cấp'],
+        'response' => 'Thông tin lương, thưởng, phụ cấp: Liên hệ Phòng VH-XH hoặc Bộ phận Tài chính để được hỗ trợ.'
+    ],
+
+    // ==================== CÁN BỘ ====================
+    [
+        'keywords' => ['cán bộ', 'công chức', 'nhân viên', 'nhân sự'],
+        'response' => 'UBND xã Long Hiệp có khoảng 30 cán bộ, công chức hoạt động tại 4 phòng ban. Xem danh sách tại trang Tổ chức nhân sự.'
+    ],
+
+    // ==================== HỘ GIA ĐÌNH ====================
+    [
+        'keywords' => ['hộ gia đình', 'hộ khẩu', 'gia đình', 'hộ nghèo', 'hộ cận nghèo'],
+        'response' => 'Chính sách hộ gia đình: Hỗ trợ hộ nghèo, cận nghèo. Liên hệ Phòng VH-XH để được hướng dẫn làm hồ sơ.'
+    ],
+
+    // ==================== TRẺ EM ====================
+    [
+        'keywords' => ['trẻ em', 'trẻ nhỏ', 'em bé', 'nuôi dạy', 'trẻ mồ côi'],
+        'response' => 'Chính sách trẻ em: Bảo trợ trẻ em mồ côi, khuyết tật, trẻ em có hoàn cảnh khó khăn. Liên hệ Phòng VH-XH: 0343.791.397.'
+    ],
+
+    // ==================== NGƯỜI CAO TUỔI ====================
+    [
+        'keywords' => ['người cao tuổi', 'người già', 'già', 'cao tuổi'],
+        'response' => 'Chế độ người cao tuổi: Trợ cấp, chăm sóc sức khỏe, thăm hỏi. Liên hệ Phòng VH-XH để được hỗ trợ.'
+    ],
+
+    // ==================== PHỤ NỮ ====================
+    [
+        'keywords' => ['phụ nữ', 'chị em', 'nữ', 'bình đẳng giới'],
+        'response' => 'Chính sách phụ nữ: Bình đẳng giới, phòng chống bạo lực gia đình, hỗ trợ phụ nữ phát triển kinh tế. Liên hệ Hội Phụ nữ xã.'
+    ],
+
+    // ==================== THANH NIÊN ====================
+    [
+        'keywords' => ['thanh niên', 'trẻ', 'tuổi trẻ', 'đoàn thanh niên'],
+        'response' => 'Phong trào thanh niên: Hoạt động Đoàn Thanh niên, tình nguyện, phát triển kinh tế. Liên hệ Đoàn Thanh niên xã.'
+    ],
+
+    // ==================== GIÁO DỤC ====================
+    [
+        'keywords' => ['giáo dục', 'trường học', 'mầm non', 'tiểu học', 'trung học', 'học sinh', 'giáo viên'],
+        'response' => 'Phòng Văn hóa - Xã hội quản lý lĩnh vực giáo dục trên địa bàn xã. Liên hệ Phòng VH-XH: 0343.791.397 để biết thông tin về trường học, giáo dục.'
+    ],
+
+    // ==================== Y TẾ ====================
+    [
+        'keywords' => ['tiêm chủng', 'vắc xin', 'khám sức khỏe', 'dịch bệnh', 'phòng bệnh'],
+        'response' => 'Trạm Y tế xã Long Hiệp thực hiện tiêm chủng định kỳ, khám sức khỏe, phòng chống dịch bệnh. Liên hệ Trạm Y tế hoặc Phòng VH-XH: 0343.791.397.'
+    ],
+
+    // ==================== NÔNG NGHIỆP ====================
+    [
+        'keywords' => ['nông nghiệp', 'nông dân', 'trồng trọt', 'chăn nuôi', 'khuyến nông', 'lúa', 'cây ăn trái'],
+        'response' => 'Phòng Kinh tế hỗ trợ phát triển nông nghiệp: khuyến nông, kỹ thuật trồng trọt, chăn nuôi, phòng chống dịch bệnh cây trồng vật nuôi. ĐT: 0944.942.121.'
+    ],
+
+    // ==================== MÔI TRƯỜNG ====================
+    [
+        'keywords' => ['môi trường', 'rác', 'vệ sinh', 'ô nhiễm', 'xả rác', 'môi trường sống'],
+        'response' => 'Phòng Kinh tế quản lý lĩnh vực môi trường. Vui lòng liên hệ để phản ánh các vấn đề về môi trường, vệ sinh trên địa bàn xã.'
+    ],
+
+    // ==================== AN NINH ====================
+    [
+        'keywords' => ['an ninh', 'trật tự', 'trộm cắp', 'cướp', 'tội phạm', 'bảo vệ'],
+        'response' => 'Phòng An ninh trật tự xã thực hiện công tác phòng chống tội phạm, bảo vệ an ninh trật tự. Khi phát hiện tội phạm, gọi ngay Công an xã hoặc tổng đài 113.'
+    ],
+
+    // ==================== DÂN SỐ ====================
+    [
+        'keywords' => ['dân số', 'kế hoạch hóa gia đình', 'sinh con', 'giám định thai nghén'],
+        'response' => 'Công tác dân số và kế hoạch hóa gia đình do Phòng Văn hóa - Xã hội phụ trách. Liên hệ: 0343.791.397.'
+    ],
+
+    // ==================== BẢO TRỢ XÃ HỘI ====================
+    [
+        'keywords' => ['bảo trợ', 'người cao tuổi', 'trẻ em', 'khuyết tật', 'nghèo', 'hộ nghèo', 'an sinh'],
+        'response' => 'Chính sách bảo trợ xã hội: Hỗ trợ người cao tuổi, trẻ em khuyết tật, hộ nghèo, cận nghèo. Liên hệ Phòng VH-XH: 0343.791.397 để được hướng dẫn.'
+    ],
+
+    // ==================== THUẾ ====================
+    [
+        'keywords' => ['thuế', 'nộp thuế', 'lệ phí', 'phí', 'thuế đất', 'thuế nhà'],
+        'response' => 'Thông tin thuế, phí: Liên hệ Phòng Kinh tế UBND xã để được hướng dẫn về các loại thuế, phí liên quan đến đất đai, xây dựng.'
+    ],
+
+    // ==================== NGÂN HÀNG ====================
+    [
+        'keywords' => ['ngân hàng', 'tiết kiệm', 'vay vốn', 'tín dụng'],
+        'response' => 'Thông tin ngân hàng: Liên hệ Phòng Kinh tế để được hỗ trợ vay vốn ưu đãi, programs phát triển kinh tế.'
+    ],
+
+    // ==================== GIAO THÔNG ====================
+    [
+        'keywords' => ['giao thông', 'đường', 'cầu', 'đường bộ', 'tai nạn'],
+        'response' => 'Phòng Kinh tế quản lý hạ tầng giao thông. Phản ánh tình trạng đường sá, cầu cống tại UBND xã.'
+    ],
+
+    // ==================== ĐIỆN NƯỚC ====================
+    [
+        'keywords' => ['điện', 'nước', 'điện lực', 'cấp nước', 'thoát nước'],
+        'response' => 'Liên hệ Điện lực, Công ty nước để được hỗ trợ về dịch vụ điện, nước trên địa bàn xã.'
+    ],
+
+    // ==================== HỘ TỊCH ====================
+    [
+        'keywords' => ['hộ tịch', 'giấy khai sinh', 'giấy tờ hộ tịch', 'sổ hộ tịch'],
+        'response' => 'Hộ tịch: Đăng ký khai sinh, kết hôn, khai tử, sửa đổi hộ tịch. Nộp tại Văn phòng UBND xã.'
+    ],
+
+    // ==================== CHỨNG THỰC ====================
+    [
+        'keywords' => ['chứng thực', 'công chứng', 'xác nhận chữ ký', 'sao y'],
+        'response' => 'Dịch vụ chứng thực: Nộp tại Văn phòng UBND xã. Lệ phí: 5.000đ/trang. Thời hạn: Trong ngày.'
+    ],
+
+    // ==================== ĐĂNG KÝ KINH DOANH ====================
+    [
+        'keywords' => ['kinh doanh', 'đăng ký kinh doanh', 'doanh nghiệp', 'cửa hàng', 'tiệm'],
+        'response' => 'Đăng ký kinh doanh: Nộp tại Phòng Kinh tế. Hồ sơ gồm đơn đề nghị, CMND/CCCD, giấy tờ quyền sử dụng đất. Thời hạn: 5 ngày làm việc.'
+    ],
+
+    // ==================== XÂY DỰNG ====================
+    [
+        'keywords' => ['xây nhà', 'xây dựng', 'sửa nhà', 'cải tạo', 'phá dỡ'],
+        'response' => 'Giấy phép xây dựng: Nộp tại Phòng Kinh tế. Hồ sơ gồm đơn đề nghị, bản vẽ thiết kế, giấy tờ quyền sử dụng đất. Thời hạn: 20 ngày làm việc.'
+    ],
+
+    // ==================== MUA BÁN ĐẤT ====================
+    [
+        'keywords' => ['mua đất', 'bán đất', 'chuyển nhượng', 'sang tên', 'tách thửa'],
+        'response' => 'Mua bán, chuyển nhượng đất: Liên hệ Phòng Kinh tế để được hướng dẫn thủ tục sang tên, tách thửa, cấp giấy chứng nhận mới.'
+    ],
+
+    // ==================== CHO THUÊ NHÀ ====================
+    [
+        'keywords' => ['cho thuê', 'thuê nhà', 'thuê phòng', 'nhà trọ'],
+        'response' => 'Cho thuê nhà: Liên hệ Phòng Kinh tế để đăng ký và thực hiện nghĩa vụ thuế theo quy định.'
+    ],
+
+    // ==================== SỞ HỮU TRÍ TUỆ ====================
+    [
+        'keywords' => ['sở hữu trí tuệ', 'bản quyền', 'logo', 'thương hiệu'],
+        'response' => 'Sở hữu trí tuệ: Liên hệ Phòng Kinh tế để được hướng dẫn đăng ký nhãn hiệu, bản quyền.'
+    ],
+
+    // ==================== THANH TRA ====================
+    [
+        'keywords' => ['thanh tra', 'kiểm tra', 'xử phạt', 'vi phạm'],
+        'response' => 'Thanh tra UBND xã thực hiện kiểm tra, xử lý vi phạm hành chính trên địa bàn. Liên hệ UBND xã để phản ánh.'
+    ],
+
+    // ==================== Khiếu nại ====================
+    [
+        'keywords' => ['khiếu nại', 'tố cáo', 'phản ánh', 'góp ý', 'kiến nghị'],
+        'response' => 'Khiếu nại, tố cáo: Nộp đơn tại Văn phòng UBND xã. Cần có đơn rõ ràng, kèm bằng chứng. Thời hạn giải quyết: 45 ngày.'
+    ],
+
+    // ==================== DỊCH VỤ CÔNG TRỰC TUYẾN ====================
+    [
+        'keywords' => ['dịch vụ công', 'công trực tuyến', 'nộp hồ sơ online', 'eportal'],
+        'response' => 'Dịch vụ công trực tuyến: Truy cập https://longhiep.vinhlong.gov.vn/dich-vu-cong để nộp hồ sơ trực tuyến.'
+    ],
+
+    // ==================== CÁC NGÀY LỄ LỚN ====================
+    [
+        'keywords' => ['30/4', '1/5', '2/9', 'tết', 'nguyên đán', 'quốc khánh'],
+        'response' => 'Nghỉ lễ: 30/4-1/5 (5 ngày), 2/9 (1 ngày), Tết Nguyên Đán (5 ngày). Chi tiết xem lịch nghỉ lễ hàng năm.'
+    ],
+
+    // ==================== SỐ ĐIỆN THOẠI QUAN TRỌNG ====================
+    [
+        'keywords' => ['số điện thoại', 'hotline', 'gọi', 'liên hệ nhanh'],
+        'response' => 'Số điện thoại quan trọng:\n- UBND xã: (0270) 3.856.417\n- Công an xã: 113\n- Trạm Y tế: Liên hệ UBND\n- Phòng Kinh tế: 0944.942.121\n- Phòng VH-XH: 0343.791.397'
+    ],
+
+    // ==================== HƯỚNG Dẫn ====================
+    [
+        'keywords' => ['hướng dẫn', 'chỉ dẫn', 'làm sao', 'thế nào', 'như thế nào'],
+        'response' => 'Bạn cần hướng dẫn cụ thể về vấn đề gì? Ví dụ: Thủ tục hành chính, đất đai, xây dựng, hộ tịch, bảo hiểm...?'
+    ],
+
+    // ==================== CÓ THỂ ====================
+    [
+        'keywords' => ['có thể', 'có khả năng', 'có được', 'được không'],
+        'response' => 'Bạn có thể hỏi tôi về hầu hết các thông tin liên quan đến UBND xã Long Hiệp. Hãy thử đặt câu hỏi cụ thể!'
+    ],
+
+    // ==================== TẠI SAO ====================
+    [
+        'keywords' => ['tại sao', 'vì sao', 'lý do'],
+        'response' => 'Bạn có thể giải thích rõ hơn về vấn đề bạn muốn tìm hiểu không? Tôi sẽ cố gắng trả lời tốt nhất có thể.'
+    ],
+
+    // ==================== KHI NÀO ====================
+    [
+        'keywords' => ['khi nào', 'bao giờ', 'thời gian', 'lúc nào'],
+        'response' => 'Bạn muốn biết thông tin về thời gian cụ thể nào? Ví dụ: Giờ làm việc, lịch tiếp dân, thời hạn giải quyết thủ tục...?'
+    ],
+
+    // ==================== Ở ĐÂU ====================
+    [
+        'keywords' => ['ở đâu', 'nơi nào', 'địa điểm', 'chỗ nào'],
+        'response' => 'UBND xã Long Hiệp: xã Long Hiệp, tỉnh Vĩnh Long. ĐT: (0270) 3.856.417.'
+    ],
+
+    // ==================== BAO NHIÊU ====================
+    [
+        'keywords' => ['bao nhiêu', 'số lượng', 'mức', 'giá'],
+        'response' => 'Bạn muốn biết thông tin cụ thể về số lượng, mức giá nào? Ví dụ: Lệ phí thủ tục, số cán bộ, diện tích...?'
+    ],
+
+    // ==================== AI ====================
+    [
+        'keywords' => ['ai', 'người nào', 'ai đó'],
+        'response' => 'Bạn muốn biết thông tin về ai cụ thể? Ví dụ: Lãnh đạo UBND, trưởng phòng ban, cán bộ phụ trách...?'
+    ],
 ];
 
 // Hàm tìm câu trả lời từ CSDL tri thức

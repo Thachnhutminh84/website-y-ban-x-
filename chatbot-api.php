@@ -70,9 +70,9 @@ if ($aiAnswer) {
 // ============================================================
 echo json_encode([
     'success' => true,
-    'response' => 'Xin lỗi, tôi chưa có thông tin về vấn đề này. Bạn có thể thử hỏi lại với từ khóa khác hoặc liên hệ trực tiếp UBND xã Long Hiệp:\n\n📍 Địa chỉ: xã Long Hiệp, tỉnh Vĩnh Long\n📞 ĐT: (0270) 3.856.417\n📧 Email: ubnd.longhiep@vinhlong.gov.vn',
+    'response' => 'Xin lỗi, tôi chưa có thông tin về vấn đề này. Bạn có thể thử hỏi lại với từ khóa khác hoặc liên hệ trực tiếp UBND xã Long Hiệp:\n\n📍 Địa chỉ: xã Long Hiệp, tỉnh Vĩnh Long\n📞 ĐT: (0270) 3.856.417\n📧 Email: ubnd.longhiep@vinhlong.gov.vn\n\nHoặc thử hỏi về: Thủ tục hành chính, Lịch tiếp dân, Giờ làm việc, Liên hệ, Phòng ban',
     'source' => 'default',
-    'suggestions' => ['Thủ tục hành chính', 'Lịch tiếp dân', 'Liên hệ', 'Giờ làm việc']
+    'suggestions' => ['Thủ tục hành chính', 'Lịch tiếp dân', 'Liên hệ', 'Giờ làm việc', 'Phòng ban', 'Địa chỉ']
 ]);
 exit();
 
