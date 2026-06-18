@@ -66,7 +66,7 @@ if ($aiAnswer) {
 // ============================================================
 echo json_encode([
     'success' => true,
-    'response' => 'Xin lỗi, tôi chưa có thông tin về vấn đề này. Bạn có thể thử hỏi lại với từ khóa khác hoặc liên hệ trực tiếp UBND xã Long Hiệp:\n\n📍 Địa chỉ: Ấp Long Hiệp, xã Long Hiệp, huyện Trà Ôn, tỉnh Vĩnh Long\n📞 ĐT: (0270) 3.856.417\n📧 Email: ubnd.longhiep@vinhlong.gov.vn',
+    'response' => 'Xin lỗi, tôi chưa có thông tin về vấn đề này. Bạn có thể thử hỏi lại với từ khóa khác hoặc liên hệ trực tiếp UBND xã Long Hiệp:\n\n📍 Địa chỉ: xã Long Hiệp, tỉnh Vĩnh Long\n📞 ĐT: (0270) 3.856.417\n📧 Email: ubnd.longhiep@vinhlong.gov.vn',
     'source' => 'default',
     'suggestions' => ['Thủ tục hành chính', 'Lịch tiếp dân', 'Liên hệ', 'Giờ làm việc']
 ]);
@@ -175,12 +175,12 @@ function callGemini($message) {
 }
 
 function getSystemPrompt() {
-    return 'Bạn là trợ lý ảo của Ủy ban Nhân dân xã Long Hiệp, huyện Trà Ôn, tỉnh Vĩnh Long, Việt Nam.
+    return 'Bạn là trợ lý ảo của Ủy ban Nhân dân xã Long Hiệp, tỉnh Vĩnh Long, Việt Nam.
 
 NHIỆM VỤ: Hỗ trợ người dân tìm thông tin về thủ tục hành chính, lịch tiếp dân, giờ làm việc, liên hệ, và các dịch vụ của UBND xã.
 
 THÔNG TIN QUAN TRỌNG:
-- Địa chỉ: Ấp Long Hiệp, xã Long Hiệp, huyện Trà Ôn, tỉnh Vĩnh Long
+- Địa chỉ: xã Long Hiệp, tỉnh Vĩnh Long
 - ĐT: (0270) 3.856.417
 - Email: ubnd.longhiep@vinhlong.gov.vn
 - Website: https://longhiep.vinhlong.gov.vn

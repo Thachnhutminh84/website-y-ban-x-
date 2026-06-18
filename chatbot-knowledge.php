@@ -7,11 +7,11 @@ $chatbotKnowledge = [
     // ==================== GIỚI THIỆU ====================
     [
         'keywords' => ['giới thiệu', 'long hiệp', 'xã long hiệp', 'vĩnh long', 'địa giới', 'diện tích', 'dân số', 'phường xã'],
-        'response' => 'Xã Long Hiệp thuộc huyện Trà Ôn, tỉnh Vĩnh Long. Xã có diện tích khoảng 2.085 ha, dân số khoảng 12.000 người. Xã được chia thành nhiều ấp gồm: An Hiệp, An Thạnh, Long Hiệp, Thạnh Mỹ và các ấp khác.'
+        'response' => 'Xã Long Hiệp thuộc tỉnh Vĩnh Long. Xã có diện tích khoảng 2.085 ha, dân số khoảng 12.000 người. Xã được chia thành nhiều ấp gồm: An Hiệp, An Thạnh, Long Hiệp, Thạnh Mỹ và các ấp khác.'
     ],
     [
         'keywords' => ['lịch sử', 'thành lập', 'quá trình', 'truyền thống'],
-        'response' => 'Xã Long Hiệp có lịch sử hình thành và phát triển gắn liền với quá trình khai phá vùng đất Trà Ôn. Xã từng là một phần của huyện Trà Ôn từ trước năm 1975 và được tái lập sau năm 1976.'
+        'response' => 'Xã Long Hiệp có lịch sử hình thành và phát triển gắn liền với quá trình khai phá vùng đất Vĩnh Long. Xã được tái lập sau năm 1976.'
     ],
 
     // ==================== THỦ TỤC HÀNH CHÍNH ====================
@@ -69,7 +69,7 @@ $chatbotKnowledge = [
     // ==================== LIÊN HỆ ====================
     [
         'keywords' => ['liên hệ', 'điện thoại', 'số điện thoại', 'email', 'hotline', 'gọi', 'fax'],
-        'response' => 'Thông tin liên hệ UBND xã Long Hiệp: Địa chỉ: Ấp Long Hiệp, xã Long Hiệp, huyện Trà Ôn, tỉnh Vĩnh Long. ĐT: (0270) 3.856.417. Email: ubnd.longhiep@vinhlong.gov.vn.'
+        'response' => 'Thông tin liên hệ UBND xã Long Hiệp: Địa chỉ: xã Long Hiệp, tỉnh Vĩnh Long. ĐT: (0270) 3.856.417. Email: ubnd.longhiep@vinhlong.gov.vn.'
     ],
     [
         'keywords' => ['chủ tịch', 'phó chủ tịch', 'lãnh đạo ubnd', 'nguyễn khánh hòa'],
@@ -141,7 +141,7 @@ $chatbotKnowledge = [
     // ==================== ĐỊA CHỈ ====================
     [
         'keywords' => ['địa chỉ', 'ở đâu', 'nơi nào', 'trụ sở', 'vị trí', 'map', 'bản đồ', 'google map'],
-        'response' => 'Trụ sở UBND xã Long Hiệp: Ấp Long Hiệp, xã Long Hiệp, huyện Trà Ôn, tỉnh Vĩnh Long. Xem bản đồ Google Maps: tìm "UBND xã Long Hiệp, Vĩnh Long".'
+        'response' => 'Trụ sở UBND xã Long Hiệp: xã Long Hiệp, tỉnh Vĩnh Long. Xem bản đồ Google Maps: tìm "UBND xã Long Hiệp, Vĩnh Long".'
     ],
 
     // ==================== NGÀY LỄ, SỰ KIỆN ====================
