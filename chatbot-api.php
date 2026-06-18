@@ -9,11 +9,15 @@ require_once 'config.php';
 require_once 'chatbot-knowledge.php';
 
 // ============================================================
-// CONFIG - Set your API key here
+// CONFIG - Hướng dẫn lấy API key MIỄN PHÍ:
+// 1. Truy cập: https://aistudio.google.com/apikey
+// 2. Đăng nhập tài khoản Google
+// 3. Bấm "Create API Key" để lấy key miễn phí
+// 4. Dán key vào bên dưới (giữa hai dấu ')
 // ============================================================
 define('AI_PROVIDER', 'gemini'); // 'openai' or 'gemini'
 define('OPENAI_API_KEY', ''); // Add your OpenAI API key
-define('GEMINI_API_KEY', ''); // Add your Google Gemini API key
+define('GEMINI_API_KEY', ''); // <-- DÁN API KEY VÀO ĐÂY (MIỄN PHÍ)
 define('MAX_CONTEXT_MESSAGES', 10);
 
 // ============================================================
@@ -148,7 +152,7 @@ function callGemini($message) {
         ]
     ];
     
-    $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' . $apiKey;
+    $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' . $apiKey;
     
     $ch = curl_init($url);
     curl_setopt_array($ch, [
