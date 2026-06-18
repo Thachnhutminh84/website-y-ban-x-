@@ -10,6 +10,7 @@ Thumbs.db
 # Sensitive files
 .env
 config.php
+chatbot-config.php
 
 # Backups
 *-backup-*.php

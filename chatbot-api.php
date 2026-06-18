@@ -9,15 +9,16 @@ require_once 'config.php';
 require_once 'chatbot-knowledge.php';
 
 // ============================================================
-// CONFIG - Hướng dẫn lấy API key MIỄN PHÍ:
-// 1. Truy cập: https://aistudio.google.com/apikey
-// 2. Đăng nhập tài khoản Google
-// 3. Bấm "Create API Key" để lấy key miễn phí
-// 4. Dán key vào bên dưới (giữa hai dấu ')
+// CONFIG - Đọc API key từ file riêng (an toàn, không commit git)
 // ============================================================
+if (file_exists('chatbot-config.php')) {
+    require_once 'chatbot-config.php';
+} else {
+    // Fallback: Đọc từ env hoặc hardcode (khuyến nghị dùng file config)
+    define('GEMINI_API_KEY', getenv('GEMINI_API_KEY') ?: '');
+    define('OPENAI_API_KEY', getenv('OPENAI_API_KEY') ?: '');
+}
 define('AI_PROVIDER', 'gemini'); // 'openai' or 'gemini'
-define('OPENAI_API_KEY', ''); // Add your OpenAI API key
-define('GEMINI_API_KEY', ''); // <-- DÁN API KEY VÀO ĐÂY (MIỄN PHÍ)
 define('MAX_CONTEXT_MESSAGES', 10);
 
 // ============================================================
