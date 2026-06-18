@@ -872,10 +872,31 @@ include 'header-menu.php';
     overflow: hidden;
 }
 
-/* News card hover effect */
-.news-card-home:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.15) !important;
+/* --- Responsive --- */
+@media (max-width: 1024px) {
+    .features-grid { grid-template-columns: repeat(2, 1fr); }
+    .about-grid { grid-template-columns: 1fr; }
+    .about-visual { display: none; }
+    .dept-showcase { grid-template-columns: repeat(2, 1fr); }
+    .qs-grid { grid-template-columns: repeat(2, 1fr); }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .dept-showcase { grid-template-columns: 1fr; }
+    .qs-grid { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .section { padding: 48px 16px; }
+    .stats-banner { padding: 36px 24px; }
+    .news-slider-container .news-slider-prev { left: 5px !important; }
+    .news-slider-container .news-slider-next { right: 5px !important; }
+}
+
+@media (max-width: 480px) {
+    .contact-grid { grid-template-columns: 1fr; }
+    .cta-buttons { flex-direction: column; align-items: center; }
+    .btn-hero { width: 100%; justify-content: center; }
+    .stats-grid { grid-template-columns: 1fr; }
 }
 
 .news-card-home:hover img {
@@ -1075,7 +1096,7 @@ try {
                                     LEFT JOIN categories c ON n.category_id = c.id 
                                     WHERE n.status = 'published' 
                                     ORDER BY n.published_at DESC, n.id DESC 
-                                    LIMIT 6");
+                                    LIMIT 10");
     if ($newsStmt) {
         $newsStmt->execute();
         $newsResult = $newsStmt->get_result();
@@ -1098,43 +1119,44 @@ try {
         <p>Cập nhật thông tin mới nhất từ UBND xã Long Hiệp</p>
     </div>
     
-    <div class="news-grid-home" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1200px; margin: 0 auto; padding: 0 24px;">
-        <?php foreach ($latestNews as $item): ?>
-        <a href="chi-tiet-tin.php?id=<?php echo $item['id']; ?>" class="news-card-home" style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: all 0.3s ease; text-decoration: none; color: inherit; display: block;">
-            <div style="position: relative; padding-top: 56.25%; overflow: hidden;">
-                <img src="<?php echo htmlspecialchars($item['image'] ?: 'images/news-default.jpg', ENT_QUOTES, 'UTF-8'); ?>" 
-                     alt="<?php echo htmlspecialchars($item['title'], ENT_QUOTES, 'UTF-8'); ?>"
-                     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
-                <?php if ($item['category_slug']): ?>
-                <span style="position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.7); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;">
-                    <?php 
-                    $catNames = [
-                        'xay-dung-dang' => 'Xây dựng Đảng',
-                        'mat-tran' => 'Mặt trận đoàn thể',
-                        'an-ninh' => 'An ninh trật tự',
-                        'su-kien' => 'Sự kiện',
-                        'tuyen-truyen' => 'Tuyên truyền',
-                        'giao-duc' => 'Giáo dục'
-                    ];
-                    echo $catNames[$item['category_slug']] ?? $item['category_slug'];
-                    ?>
-                </span>
-                <?php endif; ?>
+    <div class="news-slider-container" style="max-width: 900px; margin: 0 auto; padding: 0 24px; position: relative;">
+        <!-- News Slider -->
+        <div class="news-slider" style="position: relative; overflow: hidden; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+            <?php foreach ($latestNews as $index => $item): ?>
+            <div class="news-slide" style="display: <?php echo $index === 0 ? 'block' : 'none'; ?>; padding: 30px;">
+                <a href="chi-tiet-tin.php?id=<?php echo $item['id']; ?>" style="text-decoration: none; color: inherit; display: block;">
+                    <h3 style="margin: 0 0 20px 0; font-size: 22px; font-weight: 700; color: #c0392b; line-height: 1.4; text-align: center;">
+                        <?php echo htmlspecialchars($item['title'], ENT_QUOTES, 'UTF-8'); ?>
+                    </h3>
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <img src="<?php echo htmlspecialchars($item['image'] ?: 'images/news-default.jpg', ENT_QUOTES, 'UTF-8'); ?>" 
+                             alt="<?php echo htmlspecialchars($item['title'], ENT_QUOTES, 'UTF-8'); ?>"
+                             style="max-width: 100%; max-height: 450px; border-radius: 8px; object-fit: contain;">
+                    </div>
+                    <?php if ($item['summary']): ?>
+                    <p style="margin: 0; font-size: 15px; color: #333; line-height: 1.7; text-align: justify;">
+                        <?php echo htmlspecialchars($item['summary'], ENT_QUOTES, 'UTF-8'); ?>
+                    </p>
+                    <?php endif; ?>
+                </a>
             </div>
-            <div style="padding: 20px;">
-                <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 700; color: #1a202c; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                    <?php echo htmlspecialchars($item['title'], ENT_QUOTES, 'UTF-8'); ?>
-                </h3>
-                <p style="margin: 0 0 12px 0; font-size: 14px; color: #64748b; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                    <?php echo htmlspecialchars($item['summary'] ?: '', ENT_QUOTES, 'UTF-8'); ?>
-                </p>
-                <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #94a3b8;">
-                    <i class="fas fa-clock"></i>
-                    <span><?php echo date('d/m/Y', strtotime($item['published_at'])); ?></span>
-                </div>
-            </div>
-        </a>
-        <?php endforeach; ?>
+            <?php endforeach; ?>
+        </div>
+        
+        <!-- Navigation Arrows -->
+        <button class="news-slider-prev" onclick="changeNewsSlide(-1)" style="position: absolute; left: -20px; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; background: white; border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.2); cursor: pointer; font-size: 20px; color: #333; z-index: 10; transition: all 0.3s;">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="news-slider-next" onclick="changeNewsSlide(1)" style="position: absolute; right: -20px; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; background: white; border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.2); cursor: pointer; font-size: 20px; color: #333; z-index: 10; transition: all 0.3s;">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+        
+        <!-- Dots Navigation -->
+        <div style="text-align: center; margin-top: 20px;">
+            <?php foreach ($latestNews as $index => $item): ?>
+            <button class="news-dot" onclick="goToNewsSlide(<?php echo $index; ?>)" style="width: 10px; height: 10px; border-radius: 50%; border: none; margin: 0 5px; cursor: pointer; transition: all 0.3s; background: <?php echo $index === 0 ? '#c0392b' : '#ddd'; ?>;"></button>
+            <?php endforeach; ?>
+        </div>
     </div>
     
     <div style="text-align: center; margin-top: 32px;">
@@ -1143,6 +1165,39 @@ try {
         </a>
     </div>
 </section>
+
+<script>
+let currentNewsSlide = 0;
+const totalNewsSlides = <?php echo count($latestNews); ?>;
+const slides = document.querySelectorAll('.news-slide');
+const dots = document.querySelectorAll('.news-dot');
+
+function showNewsSlide(index) {
+    slides.forEach((slide, i) => {
+        slide.style.display = i === index ? 'block' : 'none';
+    });
+    dots.forEach((dot, i) => {
+        dot.style.background = i === index ? '#c0392b' : '#ddd';
+    });
+    currentNewsSlide = index;
+}
+
+function changeNewsSlide(direction) {
+    let newIndex = currentNewsSlide + direction;
+    if (newIndex < 0) newIndex = totalNewsSlides - 1;
+    if (newIndex >= totalNewsSlides) newIndex = 0;
+    showNewsSlide(newIndex);
+}
+
+function goToNewsSlide(index) {
+    showNewsSlide(index);
+}
+
+// Auto slide every 5 seconds
+setInterval(function() {
+    changeNewsSlide(1);
+}, 5000);
+</script>
 <?php endif; ?>
 
 <!-- ========== ABOUT ========== -->
